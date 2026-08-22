@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Batcave — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#04060a;
+    --panel:#0b1420;
+    --stone:#131c29;
+    --cyan:#2de3ff;
+    --cyan-dim:rgba(45,227,255,.28);
+    --amber:#f2b705;
+    --text:#d9e4ee;
+    --text-dim:#7688a0;
+    --stage-max:1400px;   /* cap the rendered size so art scales DOWN, not up */
+    --font-display:'Chakra Petch', 'Arial Narrow', sans-serif;
+    --font-body:'DM Mono', ui-monospace, monospace;
+    --marker:#ffc233;
+    --marker-soft:rgba(255,194,51,.55);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  html, body{ height:100%; }
+  body{
+    background:var(--void);
+    color:var(--text);
+    font-family:var(--font-body);
+    margin:0; padding:0;
+    width:100vw; height:100vh; height:100dvh;
+    overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition-duration:.01ms !important; }
+  }
+
+  /* ---------- bat cursor ---------- */
+  .crt-frame, .crt-frame *{ cursor:none; }
+
+
+  /* ================= ANIMATED CURSOR ================= */
+  #batCursor{
+    position:fixed; left:0; top:0; width:32px; height:32px;
+    pointer-events:none; z-index:9999;
+    opacity:0; transition:opacity .18s ease;
+    will-change:transform;
+  }
+  #batCursor.show{ opacity:1; }
+  #batCursor .sprite{
+    position:absolute; inset:0; width:100%; height:100%;
+    transform-origin:50% 50%;
+    transition:opacity .22s ease, transform .3s cubic-bezier(.25,1.4,.4,1);
+  }
+  #batCursor .logo{ opacity:1; transform:scale(1) rotate(0deg); }
+  #batCursor .cowl{ opacity:0; transform:scale(.5) rotate(-18deg); }
+  #batCursor.hot .logo{ opacity:0; transform:scale(1.45) rotate(12deg); }
+  #batCursor.hot .cowl{ opacity:1; transform:scale(1) rotate(0deg); }
+  #batCursor .ring{
+    position:absolute; inset:-9px; border:1px solid var(--marker); border-radius:50%;
+    opacity:0; transform:scale(.5);
+    transition:opacity .25s ease, transform .3s cubic-bezier(.25,1.4,.4,1);
+  }
+  #batCursor.hot .ring{ opacity:.55; transform:scale(1); animation:curPulse 1.5s ease-out infinite; }
+  @keyframes curPulse{
+    0%{ transform:scale(1); opacity:.55; }
+    70%,100%{ transform:scale(1.5); opacity:0; }
+  }
+  #batCursor.click .logo, #batCursor.click .cowl{ transform:scale(.78); }
+  @media (hover:none){ #batCursor{ display:none; } .crt-frame, .crt-frame *{ cursor:auto; } }
+
+
+  /* ---------- audio ---------- */
+  .audio-btn{
+    position:absolute; left:42px; bottom:17px; z-index:30;
+    display:flex; align-items:center; gap:8px;
+    padding:0; background:none; border:none;
+    font-family:var(--font-display); font-weight:700; font-size:12px; letter-spacing:2.5px;
+    color:var(--cyan); opacity:.7; line-height:1;
+    text-shadow:0 0 10px rgba(45,227,255,.6), 0 1px 3px #000;
+    transition:opacity .15s, color .15s;
+  }
+  .audio-btn:hover, .audio-btn:focus-visible{ opacity:1; color:#bff4ff; outline:none; }
+  .audio-btn .bars{ display:flex; align-items:flex-end; gap:2px; height:11px; }
+  .audio-btn .bars i{
+    width:2px; background:currentColor; height:4px;
+    animation:eq .9s ease-in-out infinite;
+  }
+  .audio-btn .bars i:nth-child(2){ animation-delay:.15s; height:9px; }
+  .audio-btn .bars i:nth-child(3){ animation-delay:.3s;  height:6px; }
+  .audio-btn .bars i:nth-child(4){ animation-delay:.45s; height:11px; }
+  @keyframes eq{ 0%,100%{ transform:scaleY(.4); } 50%{ transform:scaleY(1); } }
+  .audio-btn.muted{ opacity:.45; }
+  .audio-btn.muted .bars i{ animation:none; transform:scaleY(.35); }
+
+  /* label alternates between the control name and the track credit */
+  .audio-btn .label{
+    position:relative; display:inline-block; text-align:left; white-space:nowrap;
+  }
+  /* invisible sizer holds the width of the longer string so nothing jumps */
+  .audio-btn .sizer{ visibility:hidden; }
+  .audio-btn .swap{
+    position:absolute; left:0; top:50%; transform:translateY(-50%); white-space:nowrap;
+  }
+  .audio-btn .swap.a{ animation:labelA 13s ease-in-out infinite; }
+  .audio-btn .swap.b{ animation:labelB 13s ease-in-out infinite; font-size:9px; letter-spacing:1.5px; }
+  @keyframes labelA{
+    0%,40%   { opacity:1; transform:translateY(-50%); }
+    46%,94%  { opacity:0; transform:translateY(-50%) translateY(-4px); }
+    100%     { opacity:1; transform:translateY(-50%); }
+  }
+  @keyframes labelB{
+    0%,40%   { opacity:0; transform:translateY(-50%) translateY(4px); }
+    46%,94%  { opacity:1; transform:translateY(-50%); }
+    100%     { opacity:0; transform:translateY(-50%) translateY(4px); }
+  }
+  .audio-btn.muted .swap{ animation-play-state:paused; }
+  .audio-btn.muted .swap.a{ opacity:1; }
+  .audio-btn.muted .swap.b{ opacity:0; }
+
+
+
+  /* ================= PAGE BACKDROP ================= */
+  #pageBg{ position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+  .crt-frame{ z-index:1; }
+
+  /* the current scene, blurred way out - the console appears to bleed light into the room */
+  .bg-art{
+    position:absolute; inset:-10%;
+    background-size:cover; background-position:center;
+    filter:blur(70px) saturate(.7) brightness(.45);
+    transform:scale(1.2);
+    opacity:.6;
+    transition:background-image .5s ease, opacity .5s ease;
+  }
+  /* faint survey grid, drifting slowly */
+  .bg-grid{
+    position:absolute; inset:-60%;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(45,227,255,.5) 0 1px, transparent 1px 90px),
+      repeating-linear-gradient(0deg,  rgba(45,227,255,.5) 0 1px, transparent 1px 90px);
+    opacity:.05;
+    animation:bgDrift 90s linear infinite;
+  }
+  @keyframes bgDrift{ to{ transform:translate(90px, 90px); } }
+  /* pulls the eye back to the console */
+  .bg-vign{
+    position:absolute; inset:0;
+    background:radial-gradient(circle at 50% 46%, transparent 26%, rgba(2,4,7,.55) 72%, rgba(2,4,7,.92) 100%);
+  }
+  /* bats crossing the room, well behind the frame */
+  .bg-bat{
+    position:absolute; width:var(--size,18px); height:var(--size,18px);
+    opacity:.5;
+    animation:bgBatCross var(--dur,34s) linear infinite;
+    animation-delay:var(--delay,0s);
+  }
+  .bg-bat .bob{
+    width:100%; height:100%; position:relative;
+    animation:batBob calc(var(--dur,34s) / 14) ease-in-out infinite,
+              batBank calc(var(--dur,34s) / 10) ease-in-out infinite;
+  }
+  .bg-bat svg{ position:absolute; inset:0; width:100%; height:100%; fill:#070a0f; }
+  .bg-bat svg.f1{ animation:flapA .38s steps(1,end) infinite; }
+  .bg-bat svg.f2{ animation:flapB .38s steps(1,end) infinite; }
+  @keyframes bgBatCross{
+    from{ transform:translateX(var(--from,-12vw)) scaleX(var(--dir,1)); }
+    to  { transform:translateX(var(--to,112vw))  scaleX(var(--dir,1)); }
+  }
+  /* slow motes in the air of the room */
+  .bg-dust{
+    position:absolute; width:2px; height:2px; border-radius:50%;
+    background:rgba(160,200,225,.5);
+    animation:dustDrift var(--dur,22s) linear infinite;
+    animation-delay:var(--delay,0s);
+  }
+  @media (prefers-reduced-motion: reduce){
+    .bg-grid, .bg-bat, .bg-dust{ animation:none; }
+    .bg-bat, .bg-dust{ display:none; }
+  }
+
+  /* ---------- outer frame ---------- */
+  .crt-frame{
+    position:relative;
+    /* whichever is smallest: the cap, the viewport width, or what the height allows */
+    width:min(var(--stage-max), 100vw, calc(100vh * 16 / 9));
+    aspect-ratio:16 / 9;
+    height:auto; max-height:100vh;
+    border:1px solid var(--cyan-dim); border-radius:3px;
+    background:var(--void);
+    box-shadow:0 0 0 1px #000, 0 40px 120px -40px rgba(45,227,255,.18);
+    overflow:hidden;
+  }
+  .crt-frame::after{
+    content:"";
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.025) 0px,
+      rgba(255,255,255,0.025) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events:none;
+    mix-blend-mode:overlay;
+    z-index:99;
+  }
+  .corner{
+    position:absolute; width:18px; height:18px;
+    border:2px solid var(--cyan); opacity:.55; z-index:98;
+    pointer-events:none;
+  }
+  .corner.tl{top:14px;left:14px;border-right:none;border-bottom:none;}
+  .corner.tr{top:14px;right:14px;border-left:none;border-bottom:none;}
+  .corner.bl{bottom:14px;left:14px;border-right:none;border-top:none;}
+  .corner.br{bottom:14px;right:14px;border-left:none;border-top:none;}
+
+
+
+
+
+
+  .back-btn{
+    position:absolute; top:clamp(16px,2.2vh,30px); right:clamp(18px,1.8vw,36px); z-index:30;
+    display:none; align-items:center; gap:7px;
+    padding:0; background:none; border:none;
+    font-family:var(--font-display); font-weight:700; font-size:13px; letter-spacing:2.5px; line-height:1;
+    color:var(--cyan); opacity:.85;
+    text-shadow:0 0 10px rgba(45,227,255,.75), 0 1px 3px #000;
+    transition:opacity .15s, color .15s, transform .15s;
+  }
+  .back-btn:hover, .back-btn:focus-visible{
+    opacity:1; color:#bff4ff; transform:translateX(2px); outline:none;
+  }
+
+  /* ---------- stage ---------- */
+  .stage{
+    position:relative;
+    width:100%; height:100%;
+    overflow:hidden; background:var(--void);
+  }
+  .scene{
+    position:absolute; inset:0; opacity:0; pointer-events:none; z-index:1;
+  }
+  .scene.active{ opacity:1; pointer-events:auto; z-index:2; }
+
+  /* parallax wrapper: art + hotspots move together so they stay aligned */
+  .parallax{
+    position:absolute; inset:0;
+    transform:scale(1.035);
+    transition:transform .45s cubic-bezier(.2,.7,.3,1);
+    will-change:transform;
+  }
+  .parallax.tracking{ transition:transform .12s linear; }
+
+  #fadeOverlay{
+    position:absolute; inset:0; background:#000;
+    opacity:0; pointer-events:none;
+    transition:opacity .35s ease; z-index:20;
+  }
+  #fadeOverlay.active{ opacity:1; }
+
+  /* ---------- art ---------- */
+  .art-video{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover; object-position:center;
+    display:block;
+  }
+  .art{
+    image-rendering:auto;
+    position:absolute; inset:0;
+    background-size:cover; background-position:center;
+    background-color:var(--stone);
+  }
+  .art::before{
+    content:""; position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(90deg, var(--cyan-dim) 0 1px, transparent 1px 64px),
+      repeating-linear-gradient(0deg, var(--cyan-dim) 0 1px, transparent 1px 64px);
+    opacity:.05;
+  }
+  /* vignette that deepens toward edges, keeps focus centered */
+  .vignette{
+    position:absolute; inset:0; pointer-events:none; z-index:4;
+    background:radial-gradient(125% 105% at 50% 45%, transparent 52%, rgba(4,6,10,.45) 100%);
+  }
+
+  /* ---------- overview hotspots ---------- */
+  .title-plate{
+    position:absolute; top:clamp(18px,2.4vh,34px); left:50%; transform:translateX(-50%);
+    font-family:var(--font-display); font-weight:700; font-size:14px; letter-spacing:3px;
+    color:var(--amber); text-shadow:0 0 12px rgba(242,183,5,.4);
+    z-index:6;
+  }
+  .hotspot{
+    position:absolute; border:none; background:transparent; padding:0; margin:0;
+    -webkit-tap-highlight-color:transparent; z-index:5;
+  }
+  /* resting glow: a soft breathing pool of light so each section reads as "alive" */
+  .hotspot-glow{
+    position:absolute; inset:-6%;
+    border-radius:12px;
+    background:radial-gradient(60% 60% at 50% 50%, rgba(45,227,255,.20), transparent 70%);
+    opacity:.5;
+    animation:breathe 3.6s ease-in-out infinite;
+    animation-delay:var(--delay, 0s);
+    pointer-events:none;
+    transition:opacity .25s;
+  }
+  @keyframes breathe{
+    0%,100%{ opacity:.28; transform:scale(.97); }
+    50%    { opacity:.62; transform:scale(1.02); }
+  }
+  .hotspot-frame{
+    position:absolute; inset:0;
+    border:2px solid transparent; border-radius:4px;
+    transition:border-color .2s, box-shadow .2s, background .2s;
+  }
+  .hotspot-frame::before, .hotspot-frame::after{
+    content:""; position:absolute; width:16px; height:16px;
+    border:2px solid var(--cyan); opacity:0; transition:opacity .2s;
+  }
+  .hotspot-frame::before{top:-2px;left:-2px;border-right:none;border-bottom:none;}
+  .hotspot-frame::after{bottom:-2px;right:-2px;border-left:none;border-top:none;}
+  /* pulsing locator ring at the center of each section */
+  .hotspot-ping{
+    position:absolute; top:50%; left:50%; width:14px; height:14px; margin:-7px 0 0 -7px;
+    border-radius:50%; background:var(--cyan);
+    box-shadow:0 0 12px var(--cyan);
+    pointer-events:none;
+    transition:opacity .2s;
+  }
+  .hotspot-ping::after{
+    content:""; position:absolute; inset:0; border-radius:50%;
+    border:2px solid var(--cyan);
+    animation:ping 2.2s ease-out infinite;
+    animation-delay:var(--delay, 0s);
+  }
+  @keyframes ping{
+    0%  { transform:scale(1);   opacity:.9; }
+    100%{ transform:scale(3.4); opacity:0; }
+  }
+  .hotspot-label{
+    position:absolute; bottom:-30px; left:50%; transform:translateX(-50%);
+    font-family:var(--font-display); font-weight:700; font-size:12px; letter-spacing:2.5px;
+    color:var(--cyan); white-space:nowrap; text-shadow:0 0 10px rgba(45,227,255,.7);
+    opacity:0; transition:opacity .2s, transform .2s; pointer-events:none;
+  }
+  .hotspot:hover .hotspot-frame,
+  .hotspot:focus-visible .hotspot-frame{
+    border-color:rgba(45,227,255,.5);
+    background:rgba(45,227,255,.10);
+    box-shadow:0 0 40px rgba(45,227,255,.35) inset, 0 0 26px rgba(45,227,255,.28);
+  }
+  .hotspot:hover .hotspot-frame::before,
+  .hotspot:hover .hotspot-frame::after,
+  .hotspot:focus-visible .hotspot-frame::before,
+  .hotspot:focus-visible .hotspot-frame::after{ opacity:1; }
+  .hotspot:hover .hotspot-glow,
+  .hotspot:focus-visible .hotspot-glow{ opacity:1; animation-play-state:paused; }
+  .hotspot:hover .hotspot-ping,
+  .hotspot:focus-visible .hotspot-ping{ opacity:0; }
+  .hotspot:hover .hotspot-label,
+  .hotspot:focus-visible .hotspot-label{ opacity:1; transform:translateX(-50%) translateY(-4px); }
+  .hotspot:focus-visible{ outline:none; }
+  /* dim the siblings so the hovered section pops */
+  .scene[data-scene="overview"]:has(.hotspot:hover) .hotspot:not(:hover) .hotspot-glow{ opacity:.12; }
+
+
+  /* ================= SHAPED HOVER ZONES ================= */
+  .zones{ position:absolute; inset:0; z-index:5; width:100%; height:100%; overflow:visible; }
+  .zone, .zone *{ cursor:none; }
+  .zone:focus{ outline:none; }
+
+  /* invisible catcher so the whole area is hoverable, never drawn */
+  .zone .hit{ fill:transparent; stroke:none; pointer-events:all; }
+
+  /* the imported guide stroke — an open line, no enclosing shape */
+  .zone .line{
+    fill:none;
+    stroke:rgba(45,227,255,.45);
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    vector-effect:non-scaling-stroke;
+    pointer-events:none;
+    transition:stroke .22s, stroke-width .22s, filter .22s;
+    animation:zoneBreathe 4.2s ease-in-out infinite;
+    animation-delay:var(--delay,0s);
+  }
+  @keyframes zoneBreathe{ 0%,100%{ stroke-opacity:.4; } 50%{ stroke-opacity:.85; } }
+
+  .zone:hover .line, .zone:focus-visible .line{
+    stroke:var(--cyan);
+    stroke-opacity:1;
+    stroke-width:3;
+    animation:none;
+    filter:drop-shadow(0 0 7px rgba(45,227,255,.95));
+  }
+
+  .zone .dot{ fill:var(--cyan); pointer-events:none; transition:opacity .2s; }
+  .zone .ping{
+    fill:none; stroke:var(--cyan); stroke-width:1.5;
+    vector-effect:non-scaling-stroke; pointer-events:none;
+    transform-box:fill-box; transform-origin:center;
+    animation:zonePing 2.6s ease-out infinite;
+    animation-delay:var(--delay,0s);
+    transition:opacity .2s;
+  }
+  @keyframes zonePing{ 0%{ transform:scale(.4); opacity:.85; } 100%{ transform:scale(1.7); opacity:0; } }
+  .zone:hover .ping, .zone:focus-visible .ping,
+  .zone:hover .dot,  .zone:focus-visible .dot{ opacity:0; }
+
+  .zones:hover .zone:not(:hover) .line{ stroke-opacity:.12; }
+
+  .zone-label{
+    position:absolute; z-index:6; pointer-events:none;
+    transform:translate(-50%,-50%);
+    font-family:var(--font-display); font-weight:700; font-size:13px; letter-spacing:3px;
+    color:var(--cyan); white-space:nowrap; text-transform:uppercase;
+    text-shadow:0 0 10px rgba(45,227,255,.8), 0 1px 3px #000;
+    opacity:0; transition:opacity .2s;
+  }
+  .zone-label.show{ opacity:1; }
+
+
+  /* --- blue circle markers: drill into a closer view --- */
+  .zone .ring{
+    fill:rgba(255,194,51,.05);
+    stroke:var(--marker); stroke-width:1.25;
+    stroke-linecap:square; stroke-linejoin:miter;
+    vector-effect:non-scaling-stroke; pointer-events:none;
+    transition:stroke .22s, stroke-width .22s, fill .22s, filter .22s;
+    animation:ringBreathe 3.6s ease-in-out infinite;
+    animation-delay:var(--delay,0s);
+  }
+  @keyframes ringBreathe{ 0%,100%{ stroke-opacity:.5; } 50%{ stroke-opacity:1; } }
+
+  /* soft blue pulsing light marking the spot */
+  .zone .orbGlow{
+    fill:var(--marker); pointer-events:none;
+    transform-box:fill-box; transform-origin:center;
+    animation:orbHalo 2.1s ease-in-out infinite;
+    animation-delay:var(--delay,0s);
+    transition:opacity .2s;
+  }
+  @keyframes orbHalo{
+    0%,100%{ transform:scale(.7);  opacity:.22; }
+    50%    { transform:scale(1.15); opacity:.5;  }
+  }
+  .zone .orbDot{
+    fill:#fff3cf; pointer-events:none;
+    filter:drop-shadow(0 0 5px var(--marker)) drop-shadow(0 0 12px var(--marker-soft));
+    transform-box:fill-box; transform-origin:center;
+    animation:orbCore 2.1s ease-in-out infinite;
+    animation-delay:var(--delay,0s);
+    transition:opacity .2s;
+  }
+  @keyframes orbCore{
+    0%,100%{ transform:scale(.85); opacity:.85; }
+    50%    { transform:scale(1.1);  opacity:1;   }
+  }
+  .zone .orbPing{
+    fill:none; stroke:var(--marker); stroke-width:1;
+    vector-effect:non-scaling-stroke; pointer-events:none;
+    transform-box:fill-box; transform-origin:center;
+    animation:zonePing 2.8s ease-out infinite;
+    animation-delay:var(--delay,0s);
+    transition:opacity .2s;
+  }
+  .zone:hover .ring, .zone:focus-visible .ring{
+    stroke:#ffdd80; stroke-width:1.75;
+    fill:rgba(255,194,51,.14);
+    stroke-opacity:1; animation:none;
+    filter:drop-shadow(0 0 9px rgba(255,194,51,.95));
+  }
+  .zone:hover .orbGlow, .zone:focus-visible .orbGlow{ opacity:.75; }
+  .zone:hover .orbDot,  .zone:focus-visible .orbDot{ opacity:1; }
+  .zone:hover .orbPing, .zone:focus-visible .orbPing{ opacity:0; }
+  .zone-label.blue{ color:#ffdd80; text-shadow:0 0 10px rgba(255,194,51,.85), 0 1px 3px #000; }
+
+
+  /* ================= SCREEN POPUP ================= */
+  .screen-popup{
+    position:absolute; z-index:16;
+    left:50%; top:50%;
+    width:min(52vw, 860px); height:min(68vh, 620px);
+    transform:translate(-50%,-50%) scale(.94);
+    opacity:0; pointer-events:none;
+    border-style:solid; border-width:clamp(18px, 1.9vw, 30px);
+    border-image:url("assets/ui/screen-frame.png") 88 fill stretch;
+    image-rendering:pixelated;
+    transition:opacity .3s ease, transform .3s cubic-bezier(.2,.7,.3,1);
+  }
+  .screen-popup.open{ opacity:1; transform:translate(-50%,-50%) scale(1); pointer-events:auto; }
+  /* the frame's middle is flat teal - darken it into a real display */
+  .screen-popup::before{
+    content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(130% 95% at 50% -10%, rgba(16,86,84,.55), transparent 62%),
+      linear-gradient(180deg, rgba(4,32,34,.86) 0%, rgba(2,20,23,.94) 100%);
+  }
+  .screen-popup::after{
+    content:""; position:absolute; inset:0; pointer-events:none; z-index:3;
+    background:repeating-linear-gradient(180deg,
+      rgba(0,0,0,.20) 0 1px, transparent 1px 3px);
+  }
+
+  .screen-inner{
+    position:absolute; inset:0; z-index:1;
+    padding:20px 24px 24px; overflow-y:auto;
+    image-rendering:auto;
+    scrollbar-width:thin; scrollbar-color:rgba(125,236,255,.35) transparent;
+  }
+  .screen-inner::-webkit-scrollbar{ width:7px; }
+  .screen-inner::-webkit-scrollbar-thumb{ background:rgba(125,236,255,.32); border-radius:4px; }
+
+  .screen-inner h2{
+    font-family:var(--font-display); font-weight:700; font-size:19px; letter-spacing:1.5px;
+    color:#7df0ff; margin:0 0 7px; padding-right:76px;
+    text-shadow:0 0 14px rgba(125,240,255,.55);
+  }
+  .screen-inner .flavor{
+    display:block; font-family:var(--font-body); font-size:11px; font-weight:400; letter-spacing:1px;
+    color:rgba(140,205,200,.8); margin:0;
+    text-transform:uppercase;
+  }
+
+  .screen-inner .entry{
+    border-top:1px solid rgba(125,236,255,.16);
+    padding:14px 0 0; margin:14px 0 0;
+  }
+  .screen-inner .entry:first-of-type{
+    margin-top:18px; border-top:1px solid rgba(125,236,255,.32);
+  }
+  .screen-inner h3{
+    font-family:var(--font-display); font-weight:600; font-size:14px; line-height:1.45; letter-spacing:1.2px; text-transform:uppercase;
+    color:#e9fbff; margin:0 0 6px;
+    display:flex; align-items:baseline; gap:10px;
+    text-shadow:0 0 10px rgba(160,240,255,.3);
+  }
+  .screen-inner h3::before{
+    content:""; width:6px; height:6px; flex:none;
+    background:var(--marker); transform:translateY(-1px);
+    box-shadow:0 0 8px rgba(255,194,51,.85);
+  }
+  .screen-inner .meta{
+    font-family:var(--font-body); font-size:12px; letter-spacing:.2px;
+    color:rgba(150,214,209,.9); margin:0 0 4px; padding-left:16px;
+  }
+  .screen-inner p{
+    font-family:var(--font-body); font-size:13.5px; line-height:1.7;
+    color:#d3efe9; margin:0 0 8px; padding-left:16px;
+  }
+  .screen-inner .tags{
+    font-family:var(--font-body); font-size:12px; letter-spacing:.2px;
+    color:#8fd8cf; margin:0 0 4px; padding-left:16px;
+  }
+  .screen-inner a{
+    color:var(--marker); text-decoration:none;
+    border-bottom:1px solid rgba(255,194,51,.4);
+    transition:color .15s, border-color .15s, text-shadow .15s;
+  }
+  .screen-inner a:hover{
+    color:#ffe28a; border-color:#ffe28a;
+    text-shadow:0 0 10px rgba(255,194,51,.7);
+  }
+  .popup-close{
+    position:absolute; top:14px; right:16px; z-index:4;
+    display:flex; align-items:center; gap:7px;
+    padding:0; margin:0;
+    background:none; border:none;
+    color:var(--marker);
+    font-family:var(--font-display); font-weight:700; font-size:12px; letter-spacing:2.5px; line-height:1;
+    cursor:none;
+    text-shadow:0 0 10px rgba(255,194,51,.6);
+    opacity:.9;
+    transition:opacity .15s, color .15s, transform .15s;
+  }
+  .popup-close .x{
+    position:relative; display:inline-block; width:9px; height:9px; flex:none;
+  }
+  .popup-close .x::before, .popup-close .x::after{
+    content:""; position:absolute; left:0; top:4px;
+    width:100%; height:2px; background:currentColor;
+  }
+  .popup-close .x::before{ transform:rotate(45deg); }
+  .popup-close .x::after{ transform:rotate(-45deg); }
+  .popup-close:hover, .popup-close:focus-visible{
+    opacity:1; color:#ffe28a; transform:translateY(-1px); outline:none;
+  }
+
+  /* ---------- area scenes ---------- */
+  .terminal-row{
+    position:absolute; left:50%; bottom:26px; transform:translateX(-50%);
+    display:flex; gap:14px; z-index:6;
+  }
+  .term-btn{
+    font-family:var(--font-display); font-weight:700; font-size:12px; letter-spacing:2px;
+    color:var(--text); background:rgba(11,20,32,.88);
+    border:1px solid var(--cyan-dim);
+    padding:12px 14px; border-radius:3px;
+    text-align:left; line-height:1.6; min-width:150px;
+    backdrop-filter:blur(2px);
+    transition:border-color .2s, background .2s, transform .2s, box-shadow .2s;
+  }
+  .term-btn .sub{ display:block; font-family:var(--font-body); font-size:14px; color:var(--text-dim); margin-top:4px; }
+  .term-btn:hover, .term-btn:focus-visible{
+    border-color:var(--cyan); background:rgba(45,227,255,.12);
+    transform:translateY(-4px);
+    box-shadow:0 0 26px rgba(45,227,255,.35), 0 10px 24px -12px #000;
+    outline:none;
+  }
+  .term-btn.active{ border-color:var(--amber); box-shadow:0 0 22px rgba(242,183,5,.3); }
+  .term-btn.active .sub{ color:var(--amber); }
+
+  .area-eyebrow{
+    position:absolute; top:clamp(18px,2.4vh,34px); left:clamp(20px,2vw,40px); z-index:6;
+    font-family:var(--font-display); font-weight:600; font-size:13px; letter-spacing:2.5px; color:var(--cyan);
+    background:rgba(4,6,10,.55); padding:6px 10px; border-radius:3px;
+    text-shadow:0 0 10px rgba(45,227,255,.6);
+  }
+
+  /* ---------- content panel ---------- */
+
+  /* ---------- start screen ---------- */
+  .start-screen{
+    position:absolute; inset:0; z-index:45;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; gap:18px; padding:20px;
+    background:
+      linear-gradient(180deg, rgba(4,6,10,.6) 0%, rgba(4,6,10,.88) 55%, rgba(4,6,10,.98) 100%),
+      var(--start-bg, none) center/cover no-repeat;
+    transition:opacity .6s ease;
+  }
+  .start-screen.hidden{ opacity:0; pointer-events:none; }
+  .start-eyebrow{ font-family:var(--font-body); font-size:11px; font-weight:600; color:var(--cyan); letter-spacing:2px; }
+  .start-title{ text-transform:uppercase;
+    font-family:var(--font-display); font-weight:700; font-size:clamp(34px,7vw,64px); color:var(--amber);
+    text-shadow:0 0 18px rgba(242,183,5,.55), 0 0 44px rgba(242,183,5,.25);
+    letter-spacing:3px; margin:0;
+  }
+  .start-sub{ font-family:var(--font-body); font-size:14px; line-height:1.6; color:var(--text-dim); max-width:420px; }
+  .start-btn{
+    margin-top:8px;
+    font-family:var(--font-display); font-weight:700; font-size:16px; letter-spacing:3px;
+    color:var(--void); background:var(--amber);
+    border:none; padding:14px 28px; border-radius:3px;
+    animation:blinkStart 1.4s steps(2,start) infinite;
+    box-shadow:0 0 24px rgba(242,183,5,.4);
+  }
+  .start-btn:hover, .start-btn:focus-visible{ animation:none; background:#ffd23f; box-shadow:0 0 40px rgba(242,183,5,.6); outline:none; }
+  .start-hint{ font-family:var(--font-body); font-size:11px; color:var(--text-dim); }
+  @keyframes blinkStart{ 50%{ opacity:.55; } }
+
+  /* ================= AMBIENT FX LAYER ================= */
+  .fx{ position:absolute; inset:0; z-index:3; pointer-events:none; overflow:hidden; }
+  @media (prefers-reduced-motion: reduce){ .fx{ display:none; } }
+
+  /* --- monitor glow: irregular flicker, snapped with steps() so it reads pixel-y --- */
+  .fx-screen{
+    position:absolute; border-radius:2px;
+    mix-blend-mode:screen;
+    animation:crtFlicker var(--dur,3.4s) steps(1,end) infinite;
+    animation-delay:var(--delay,0s);
+  }
+  @keyframes crtFlicker{
+    0%,100%{opacity:.30}
+    18%{opacity:.55} 20%{opacity:.22} 22%{opacity:.48}
+    46%{opacity:.34} 48%{opacity:.62} 50%{opacity:.28}
+    72%{opacity:.52} 74%{opacity:.30} 88%{opacity:.44}
+  }
+
+  /* --- scanline sweep travelling down a screen --- */
+  .fx-scan{
+    position:absolute; overflow:hidden; mix-blend-mode:screen; opacity:.45;
+    /* feather the edges so the sweep never shows as a hard rectangle */
+    -webkit-mask-image:radial-gradient(72% 78% at 50% 50%, #000 45%, transparent 100%);
+            mask-image:radial-gradient(72% 78% at 50% 50%, #000 45%, transparent 100%);
+  }
+  .fx-scan::before{
+    content:""; position:absolute; left:0; right:0; height:34%;
+    background:linear-gradient(180deg, transparent, rgba(140,255,220,.5), transparent);
+    animation:scanSweep var(--dur,3s) steps(10,end) infinite;
+    animation-delay:var(--delay,0s);
+  }
+  @keyframes scanSweep{ from{ transform:translateY(-120%);} to{ transform:translateY(320%);} }
+
+  /* --- blinking status LEDs on racks / consoles --- */
+  .fx-led{
+    position:absolute; width:3px; height:3px; border-radius:1px;
+    box-shadow:0 0 6px currentColor;
+    background:currentColor;
+    animation:ledBlink var(--dur,1.6s) steps(1,end) infinite;
+    animation-delay:var(--delay,0s);
+  }
+  @keyframes ledBlink{ 0%,60%{opacity:1} 61%,100%{opacity:.15} }
+
+  /* --- warm strip-light flutter (armory) --- */
+  .fx-lamp{
+    position:absolute; mix-blend-mode:screen; border-radius:50%;
+    background:radial-gradient(50% 50% at 50% 50%, rgba(255,196,92,.55), transparent 70%);
+    animation:lampFlutter var(--dur,5s) steps(1,end) infinite;
+    animation-delay:var(--delay,0s);
+  }
+  @keyframes lampFlutter{
+    0%,100%{opacity:.55} 40%{opacity:.7} 41%{opacity:.3} 43%{opacity:.66} 78%{opacity:.5}
+  }
+
+  /* --- waterfall shimmer: chunky downward scroll --- */
+  .fx-water{
+    position:absolute; mix-blend-mode:screen; opacity:.55; overflow:hidden;
+    -webkit-mask-image:linear-gradient(90deg, transparent, #000 28%, #000 72%, transparent);
+            mask-image:linear-gradient(90deg, transparent, #000 28%, #000 72%, transparent);
+  }
+  /* thin vertical streaks (the water), chopped by a dash mask that scrolls down */
+  .fx-water::before{
+    content:""; position:absolute; left:0; right:0; top:-40%; bottom:-40%;
+    background:repeating-linear-gradient(
+      90deg,
+      rgba(215,245,255,.55) 0 1px,
+      transparent 1px 4px
+    );
+    -webkit-mask-image:repeating-linear-gradient(180deg, #000 0 7px, transparent 7px 19px);
+            mask-image:repeating-linear-gradient(180deg, #000 0 7px, transparent 7px 19px);
+    animation:waterFall .55s steps(4,end) infinite;
+  }
+  @keyframes waterFall{
+    from{ -webkit-mask-position:0 0;    mask-position:0 0; }
+    to  { -webkit-mask-position:0 19px; mask-position:0 19px; }
+  }
+
+  /* splash bloom where the fall hits the pool */
+  .fx-splash{
+    position:absolute; mix-blend-mode:screen; border-radius:50%;
+    background:radial-gradient(50% 50% at 50% 50%, rgba(200,240,255,.4), transparent 70%);
+    animation:splashPulse 1.5s steps(3,end) infinite;
+  }
+  @keyframes splashPulse{ 0%,100%{opacity:.35; transform:scale(.94);} 50%{opacity:.6; transform:scale(1.04);} }
+
+  /* --- rippling pool highlight --- */
+  .fx-ripple{
+    position:absolute; mix-blend-mode:screen;
+    background:repeating-linear-gradient(
+      90deg, rgba(160,220,255,.3) 0 2px, transparent 2px 11px
+    );
+    -webkit-mask-image:radial-gradient(60% 80% at 50% 50%, #000 30%, transparent 100%);
+            mask-image:radial-gradient(60% 80% at 50% 50%, #000 30%, transparent 100%);
+    animation:rippleShift 2.6s steps(6,end) infinite;
+    opacity:.32;
+  }
+  @keyframes rippleShift{ from{ background-position:0 0;} to{ background-position:12px 0;} }
+
+  /* --- flying bats: 2-frame wing flap, pixel-game style --- */
+  .fx-bat{
+    position:absolute; width:var(--size,16px); height:var(--size,16px);
+    animation:batCross var(--dur,14s) linear infinite;
+    animation-delay:var(--delay,0s);
+  }
+  .fx-bat .bob{
+    width:100%; height:100%; position:relative;
+    animation:batBob calc(var(--dur,14s) / 7) ease-in-out infinite,
+              batBank calc(var(--dur,14s) / 5) ease-in-out infinite;
+  }
+  /* eyes on the flying bats */
+  .fx-bat .eye{
+    position:absolute; left:50%; top:40%;
+    width:2px; height:2px; margin-left:-1px; border-radius:50%;
+    background:#ff3b3b; box-shadow:0 0 5px 1px rgba(255,50,50,.85);
+    animation:eyeFlicker var(--eye,8s) steps(1,end) infinite;
+  }
+  @keyframes batBank{ 0%,100%{ transform:rotate(-9deg); } 50%{ transform:rotate(9deg); } }
+
+  /* --- red eyes on the bats painted into the artwork --- */
+  .fx-eye{
+    position:absolute; width:3px; height:3px; border-radius:50%;
+    /* anchor the dot on its coordinate rather than hanging below-right of it */
+    transform:translate(-50%,-50%);
+    background:#ff2f2f;
+    box-shadow:0 0 7px 1.5px rgba(255,45,45,.8);
+    animation:eyeFlicker var(--dur,9s) steps(1,end) infinite;
+    animation-delay:var(--delay,0s);
+  }
+  /* mostly dark, with a brief stuttering catch of light — not a steady LED */
+  @keyframes eyeFlicker{
+    0%,70%   { opacity:0; }
+    72%      { opacity:.75; }
+    74%      { opacity:.2; }
+    76%,86%  { opacity:.95; }
+    88%      { opacity:.35; }
+    90%,95%  { opacity:.8; }
+    97%,100% { opacity:0; }
+  }
+  .fx-bat svg{ position:absolute; inset:0; width:100%; height:100%; fill:#0a0d12; opacity:.85; }
+  .fx-bat svg.f2{ animation:flapB .34s steps(1,end) infinite; }
+  .fx-bat svg.f1{ animation:flapA .34s steps(1,end) infinite; }
+  @keyframes flapA{ 0%,49%{opacity:.85} 50%,100%{opacity:0} }
+  @keyframes flapB{ 0%,49%{opacity:0} 50%,100%{opacity:.85} }
+  @keyframes batCross{
+    from{ transform:translateX(var(--from,-8%)) translateY(0) scaleX(var(--dir,1)); }
+    to  { transform:translateX(var(--to,115%))  translateY(var(--drop,4%)) scaleX(var(--dir,1)); }
+  }
+  @keyframes batBob{ 0%,100%{ top:0; } 50%{ top:-9px; } }
+
+  /* --- dust motes drifting in the light --- */
+  .fx-dust{
+    position:absolute; width:2px; height:2px; border-radius:50%;
+    background:rgba(200,225,255,.7);
+    animation:dustDrift var(--dur,13s) linear infinite;
+    animation-delay:var(--delay,0s);
+  }
+  @keyframes dustDrift{
+    0%  { transform:translate(0,0); opacity:0; }
+    12% { opacity:.55; }
+    88% { opacity:.4; }
+    100%{ transform:translate(var(--dx,18px), -70px); opacity:0; }
+  }
+
+  /* --- whole-scene CRT breathing, very subtle --- */
+  .fx-ambient{
+    position:absolute; inset:0; mix-blend-mode:screen;
+    background:radial-gradient(70% 55% at 50% 42%, rgba(45,227,255,.09), transparent 70%);
+    animation:ambientPulse 6s ease-in-out infinite;
+  }
+  @keyframes ambientPulse{ 0%,100%{opacity:.5} 50%{opacity:.95} }
+
+  @media (max-width:640px){
+    .term-btn{min-width:110px; padding:10px;}
+    .panel{width:88%;}
+  }
+</style>
+</head>
+<body>
+
+<div id="pageBg" aria-hidden="true">
+  <div class="bg-art" id="bgArt"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-vign"></div>
+</div>
+
+<div class="crt-frame">
+  <span class="corner tl"></span><span class="corner tr"></span>
+  <span class="corner bl"></span><span class="corner br"></span>
+
+
+  <div class="stage" id="stage">
+
+    <button class="back-btn" id="backBtn">BACK →</button>
+    <button class="audio-btn" id="audioBtn" aria-label="Toggle sound">
+      <span class="bars"><i></i><i></i><i></i><i></i></span><span class="label"><span class="sizer">BAT CAVE — DANNY ELFMAN</span><span class="swap a">AUDIO</span><span class="swap b">BAT CAVE — DANNY ELFMAN</span></span>
+    </button>
+
+
+    <!-- ===================== OVERVIEW ===================== -->
+    <section class="scene active" data-scene="overview">
+      <div class="parallax" data-depth="9">
+        <video class="art art-video" id="art-overview" autoplay muted loop playsinline preload="auto" poster="assets/images/overview.jpg">
+          <source src="assets/video/overview.mp4" type="video/mp4">
+        </video>
+
+        <svg class="zones" viewBox="0 0 1024 572" preserveAspectRatio="xMidYMid slice" aria-hidden="false">
+          <!-- Experience: console deck front lip -->
+          <g class="zone" data-target="computer" tabindex="0" role="button"
+             aria-label="Open Experience" style="--delay:0s">
+            <ellipse class="hit" cx="399" cy="367" rx="112" ry="26"/>
+            <path class="line" d="M291,378 Q399,390.5 507,373"/>
+            <circle class="dot"  cx="399" cy="384" r="3.5"/>
+            <circle class="ping" cx="399" cy="384" r="9"/>
+          </g>
+
+          <!-- About Me: armory bay, left + top edge -->
+          <g class="zone" data-target="armory" tabindex="0" role="button"
+             aria-label="Open About Me" style="--delay:.8s">
+            <rect class="hit" x="753" y="299" width="271" height="128"/>
+            <path class="line" d="M757,427 L757,312 Q757,303 766,303 L1024,303"/>
+            <circle class="dot"  cx="757" cy="370" r="3.5"/>
+            <circle class="ping" cx="757" cy="370" r="9"/>
+          </g>
+
+          <!-- Past Work: batmobile platform front edges -->
+          <g class="zone" data-target="batmobile" tabindex="0" role="button"
+             aria-label="Open Past Work" style="--delay:1.6s">
+            <polygon class="hit" points="43,481 287,522 425,470 181,427"/>
+            <path class="line" d="M43,481 L287,522 L425,470 L377,463"/>
+            <circle class="dot"  cx="165" cy="501" r="3.5"/>
+            <circle class="ping" cx="165" cy="501" r="9"/>
+          </g>
+        </svg>
+        <div class="zone-label" data-for="computer"  style="left:39%;  top:62%;">EXPERIENCE</div>
+        <div class="zone-label" data-for="armory"    style="left:86.5%; top:49%;">ABOUT ME</div>
+        <div class="zone-label" data-for="batmobile" style="left:20%;   top:95.5%;">PAST WORK</div>
+      </div>
+      <div class="vignette"></div>
+      <div class="title-plate">SELECT A STATION</div>
+    </section>
+
+    <!-- ===================== COMPUTER ===================== -->
+    <section class="scene" data-scene="computer">
+      <div class="parallax" data-depth="6"><div class="art" id="art-computer"></div>
+        <svg class="zones" viewBox="0 0 1376 768" preserveAspectRatio="xMidYMid slice">
+          <g class="zone" data-target="computer_zoom" tabindex="0" role="button" aria-label="THE BATCOMPUTER" style="--delay:.4s">
+            <polygon class="hit" points="534,180 759,195 759,367 534,375"/>
+            <path class="ring" d="M540,369 L540,186 L755,200 L755,362"/>
+            <circle class="orbPing" cx="646" cy="279" r="11"/>
+            <circle class="orbGlow" cx="646" cy="279" r="17"/>
+            <circle class="orbDot" cx="646" cy="279" r="6"/>
+          </g>
+        </svg>
+        <div class="zone-label blue" data-for="computer_zoom" style="left:46.5%; top:48%;">THE BATCOMPUTER</div>
+      </div>
+      <div class="vignette"></div>
+      <div class="area-eyebrow">BATCOMPUTER // EXPERIENCE</div>
+    </section>
+
+    <!-- ===================== ARMORY ===================== -->
+    <section class="scene" data-scene="armory">
+      <div class="parallax" data-depth="6"><div class="art" id="art-armory"></div>
+        <svg class="zones" viewBox="0 0 1024 572" preserveAspectRatio="xMidYMid slice">
+          <g class="zone" data-target="armory_zoom" tabindex="0" role="button" aria-label="THE SUIT" style="--delay:.4s">
+            <rect class="hit" x="521" y="216" width="218" height="225"/>
+            <path class="ring" d="M521,441 L521,220 L739,220 L739,441"/>
+            <circle class="orbPing" cx="630" cy="362" r="8.5"/>
+            <circle class="orbGlow" cx="630" cy="362" r="13"/>
+            <circle class="orbDot" cx="630" cy="362" r="4.5"/>
+          </g>
+        </svg>
+        <div class="zone-label blue" data-for="armory_zoom" style="left:61.5%; top:79%;">THE SUIT</div>
+      </div>
+      <div class="vignette"></div>
+      <div class="area-eyebrow">ARMORY // ABOUT ME</div>
+    </section>
+
+    <!-- ===================== BATMOBILE ===================== -->
+    <section class="scene" data-scene="batmobile">
+      <div class="parallax" data-depth="6"><div class="art" id="art-batmobile"></div>
+        <svg class="zones" viewBox="0 0 1376 768" preserveAspectRatio="xMidYMid slice">
+          <g class="zone" data-target="batmobile_zoom" tabindex="0" role="button" aria-label="THE COCKPIT" style="--delay:.4s">
+            <rect class="hit" x="611" y="195" width="326" height="194"/>
+            <path class="ring" d="M611,389 L611,195 L937,195 L937,389"/>
+            <circle class="orbPing" cx="774" cy="292" r="11"/>
+            <circle class="orbGlow" cx="774" cy="292" r="17"/>
+            <circle class="orbDot" cx="774" cy="292" r="6"/>
+          </g>
+        </svg>
+        <div class="zone-label blue" data-for="batmobile_zoom" style="left:56%; top:48%;">THE COCKPIT</div>
+      </div>
+      <div class="vignette"></div>
+      <div class="area-eyebrow">BATMOBILE BAY // PAST WORK</div>
+    </section>
+
+
+    <!-- ===================== ZOOM SCENES ===================== -->
+    <section class="scene" data-scene="computer_zoom">
+      <div class="parallax" data-depth="5"><div class="art" id="art-computer_zoom"></div></div>
+      <div class="vignette"></div>
+      <div class="area-eyebrow">EXPERIENCE // THE BATCOMPUTER</div>
+      <div class="screen-popup" id="pop-computer_zoom"><button class="popup-close" aria-label="Exit"><span>EXIT</span><span class="x"></span></button><div class="screen-inner"></div></div>
+    </section>
+
+    <section class="scene" data-scene="armory_zoom">
+      <div class="parallax" data-depth="5"><div class="art" id="art-armory_zoom"></div></div>
+      <div class="vignette"></div>
+      <div class="area-eyebrow">ABOUT ME // THE SUIT</div>
+      <div class="screen-popup" id="pop-armory_zoom"><button class="popup-close" aria-label="Exit"><span>EXIT</span><span class="x"></span></button><div class="screen-inner"></div></div>
+    </section>
+
+    <section class="scene" data-scene="batmobile_zoom">
+      <div class="parallax" data-depth="5"><div class="art" id="art-batmobile_zoom"></div></div>
+      <div class="vignette"></div>
+      <div class="area-eyebrow">PAST WORK // THE COCKPIT</div>
+      <div class="screen-popup" id="pop-batmobile_zoom"><button class="popup-close" aria-label="Exit"><span>EXIT</span><span class="x"></span></button><div class="screen-inner"></div></div>
+    </section>
+
+    <div id="fadeOverlay" aria-hidden="true"></div>
+
+
+    <div class="start-screen" id="startScreen">
+      <div class="start-eyebrow">// HOWARD HUANG · PORTFOLIO OS</div>
+      <h1 class="start-title">THE BATCAVE</h1>
+      <p class="start-sub">Howard Huang — a career, logged and encrypted. Explore the cave to see the work.</p>
+      <button class="start-btn" id="startBtn" autofocus>PRESS START ▶</button>
+      <div class="start-hint">click, press enter, or hit space</div>
+    </div>
+
+  </div>
+</div>
+
+<audio id="sndCave"  loop preload="auto" src="assets/audio/background.mp3"></audio>
+<audio id="sndTheme" loop preload="auto" src="assets/audio/theme.mp3"></audio>
+<audio id="sndClick"      preload="auto" src="assets/audio/sfx.mp3"></audio>
+
+<script>
+/* ============ 1) IMAGES ============ */
+const IMAGES = {
+  overview:  "assets/images/overview.jpg",
+  computer:  "assets/images/computer.jpg",
+  armory:    "assets/images/armory.jpg",
+  batmobile: "assets/images/batmobile.jpg",
+  computer_zoom:  "assets/images/computer_zoom.jpg",
+  armory_zoom:    "assets/images/armory_zoom.jpg",
+  batmobile_zoom: "assets/images/batmobile_zoom.jpg",
+};
+
+/* ============ 2) CONTENT ============ */
+
+const CONTENT = {
+  computer_zoom: {
+    heading: 'Experience',
+    flavor: 'Mission log \u2014 Batcomputer',
+    body: `
+      <div class="entry">
+        <h3>Eyecare Consultant</h3>
+        <p class="meta">Specsavers \u00b7 Cambridge, ON</p>
+        <p class="meta">May 2023 \u2013 Present</p>
+      </div>
+      <div class="entry">
+        <h3>Project Intern</h3>
+        <p class="meta">Illuminate \u00b7 Toronto, ON (Remote)</p>
+        <p class="meta">June 2023 \u2013 August 2023</p>
+      </div>
+      <div class="entry">
+        <h3>Co-Founder</h3>
+        <p class="meta">Orbit \u00b7 Cambridge, ON (Remote)</p>
+        <p class="meta">Aug 2021 \u2013 June 2022</p>
+      </div>
+      <div class="entry">
+        <h3>Education</h3>
+        <p class="meta">Wilfrid Laurier University \u00b7 Waterloo, ON</p>
+        <p class="meta">BSc Computer Science (Honours) \u00b7 2022\u20132026</p>
+        <p class="meta">Dean\u2019s Honour Roll, 2023</p>
+      </div>`
+  },
+
+  batmobile_zoom: {
+    heading: 'Past Work',
+    flavor: 'Case files \u2014 Batmobile',
+    body: `
+      <div class="entry">
+        <h3>Props Assist</h3>
+        <p>Full-stack tool ingesting live NBA odds and player data to generate real-time +EV projections across DraftKings, FanDuel and Caesars.</p>
+        <p class="tags">Python \u00b7 JavaScript \u00b7 HTML/CSS \u00b7 SportsGamesOdds API</p>
+      </div>
+      <div class="entry">
+        <h3>AI Tic-Tac-Toe</h3>
+        <p>Led a team of five. Minimax with Alpha-Beta pruning, plus a Gemini-powered opponent \u2014 play the AI, or watch local AI face Gemini.</p>
+        <p class="tags">Python \u00b7 PyGame \u00b7 Photoshop CS6 \u00b7 Gemini API</p>
+      </div>
+      <div class="entry">
+        <h3>NPO Connect UI</h3>
+        <p>Interface design for a nonprofit collaboration platform, from user research through wireframes to a high-fidelity Figma prototype.</p>
+        <p class="tags">Figma \u00b7 Adobe Photoshop CS6</p>
+      </div>`
+  },
+
+  armory_zoom: {
+    heading: 'About Me',
+    flavor: 'Operator profile \u2014 Armory',
+    body: `
+      <div class="entry">
+        <h3>Howard Huang</h3>
+        <p>Computer Science student at Wilfrid Laurier, working across full-stack development, data tooling and user-centered design.</p>
+      </div>
+      <div class="entry">
+        <h3>Languages</h3>
+        <p class="tags">JavaScript \u00b7 Python \u00b7 SQL \u00b7 C \u00b7 C++ \u00b7 HTML/CSS \u00b7 VBA</p>
+      </div>
+      <div class="entry">
+        <h3>Frameworks</h3>
+        <p class="tags">Pygame \u00b7 Node.js \u00b7 React \u00b7 Tailwind CSS \u00b7 NumPy</p>
+      </div>
+      <div class="entry">
+        <h3>Tools</h3>
+        <p class="tags">Microsoft 365 \u00b7 Photoshop \u00b7 Figma \u00b7 Gemini API \u00b7 Git</p>
+      </div>
+      <div class="entry">
+        <h3>Certifications</h3>
+        <p class="tags">Google AI Professional Certificate</p>
+        <p class="tags">Microsoft AI Skills Fest 2026</p>
+        <p class="tags">Udemy \u2014 Complete Web &amp; Mobile Designer</p>
+      </div>
+      <div class="entry">
+        <h3>Contact</h3>
+        <p><a href="mailto:Howardh0620@gmail.com">Howardh0620@gmail.com</a></p>
+        <p class="tags"><a href="#" data-link="linkedin">LinkedIn</a> \u00b7 <a href="#" data-link="website">Website</a></p>
+      </div>`
+  },
+};
+
+function openPopup(scene){
+  const pop = document.getElementById('pop-' + scene);
+  const data = CONTENT[scene];
+  if (!pop || !data) return;
+  pop.querySelector('.screen-inner').innerHTML =
+    '<h2>' + data.heading + '</h2><span class="flavor">' + data.flavor + '</span>' + data.body;
+  pop.classList.add('open');
+}
+function closeAllPopups(){
+  document.querySelectorAll('.screen-popup.open').forEach(p => p.classList.remove('open'));
+}
+document.addEventListener('click', e => {
+  const x = e.target.closest('.popup-close');
+  if (x) {
+    const scene = x.closest('.screen-popup').id.replace('pop-','');
+    switchScene(PARENT[scene] || 'overview');   // leave the subscene entirely
+  }
+});
+
+/* ================================================== */
+
+Object.entries(IMAGES).forEach(([key, url]) => {
+  const el = document.getElementById('art-' + key);
+  if (url && el && el.tagName !== 'VIDEO') el.style.backgroundImage = 'url("' + url + '")';
+});
+if (IMAGES.overview) {
+  document.getElementById('startScreen').style.setProperty('--start-bg', 'url("' + IMAGES.overview + '")');
+}
+
+/* =====================================================================
+   AMBIENT FX — animates light on top of the static art.
+   Coordinates are % of the scene, so they pan with the parallax layer.
+   Tweak/remove any entry to taste.
+   ===================================================================== */
+const BAT_F1 = '<svg viewBox="0 0 100 60"><path d="M50 34 L34 10 L37 30 L18 20 L29 36 L50 41 L71 36 L82 20 L63 30 L66 10 Z"/></svg>';
+const BAT_F2 = '<svg viewBox="0 0 100 60"><path d="M50 28 L33 40 L39 27 L17 42 L33 46 L50 38 L67 46 L83 42 L61 27 L67 40 Z"/></svg>';
+
+const SCENE_FX = {
+  computer_zoom: {
+    screens: [
+      { x:22.5, y:12,   w:23,  h:26,   c:'rgba(90,200,255,.45)', dur:'4.4s', delay:'.5s'  },
+      { x:35.5, y:24.5, w:29,  h:27,   c:'rgba(90,255,190,.5)',  dur:'3.6s', delay:'0s'   },
+      { x:39,   y:4,    w:22,  h:16,   c:'rgba(120,255,180,.45)',dur:'3.9s', delay:'1.4s' },
+      { x:11.5, y:36.5, w:11,  h:31,   c:'rgba(110,230,255,.4)', dur:'5.6s', delay:'.7s'  },
+      { x:24,   y:43,   w:8,   h:11,   c:'rgba(120,255,180,.4)', dur:'5.8s', delay:'1.9s' },
+      { x:23.5, y:60,   w:8,   h:11,   c:'rgba(120,255,180,.4)', dur:'4.3s', delay:'2.7s' },
+      { x:37,   y:58,   w:24,  h:33,   c:'rgba(80,220,255,.55)', dur:'3.1s', delay:'.8s'  },
+      { x:65.5, y:59,   w:13,  h:20,   c:'rgba(120,255,160,.5)', dur:'4.2s', delay:'.2s'  },
+      { x:76,   y:11.5, w:22,  h:29,   c:'rgba(140,200,230,.4)', dur:'5.2s', delay:'1.6s' },
+      { x:80,   y:52,   w:20,  h:28,   c:'rgba(140,200,230,.4)', dur:'4.6s', delay:'2.1s' },
+    ],
+    scans: [
+      { x:35.5, y:24.5, w:29, h:27, dur:'3.8s', delay:'0s'   },
+      { x:37,   y:58,   w:24, h:33, dur:'4.4s', delay:'2.2s' },
+      { x:76,   y:11.5, w:22, h:29, dur:'6.2s', delay:'.6s'  },
+    ],
+    leds: [
+      { x:2.5,  y:53,   c:'#ff5c4a', dur:'1.4s', delay:'0s'   },
+      { x:2.5,  y:57,   c:'#5cff9a', dur:'2.1s', delay:'.5s'  },
+      { x:63.5, y:95,   c:'#ff8a4a', dur:'3.3s', delay:'1.8s' },
+      { x:33,   y:95.5, c:'#ff5c4a', dur:'2.6s', delay:'.9s'  },
+    ],
+    dust: 8,
+    ambient: true,
+  },
+
+  armory_zoom: {
+    screens: [],
+    lamps: [
+      { x:9,    y:0,   w:12, h:4, dur:'5.4s', delay:'0s'   },
+      { x:31,   y:3,   w:10, h:4, dur:'6.2s', delay:'1.1s' },
+      { x:42.5, y:14,  w:9,  h:4, dur:'4.7s', delay:'2.3s' },
+      { x:50,   y:21,  w:8,  h:3, dur:'5.9s', delay:'.6s'  },
+      { x:55,   y:27,  w:7,  h:3, dur:'6.8s', delay:'3.1s' },
+      { x:33,   y:18,  w:22, h:30, dur:'7.4s', delay:'1.8s' },
+      { x:0,    y:12,  w:24, h:52, dur:'8.1s', delay:'2.9s' },
+    ],
+    leds: [
+      { x:44.5, y:29,  c:'#ffd23f', dur:'2.7s', delay:'1.5s' },
+      { x:6,    y:77,  c:'#ff6b4a', dur:'3.4s', delay:'.4s'  },
+    ],
+    eyes: [],
+    dust: 16,
+    ambient: false,
+  },
+
+  batmobile_zoom: {
+    screens: [
+      { x:44.5, y:19,  w:19, h:26, c:'rgba(120,255,180,.5)', dur:'4.2s', delay:'.7s'  },
+      { x:60,   y:2,   w:40, h:42, c:'rgba(90,255,190,.5)',  dur:'3.3s', delay:'0s'   },
+      { x:63,   y:54,  w:10, h:12, c:'rgba(120,255,180,.55)',dur:'2.8s', delay:'.4s'  },
+      { x:74.5, y:54,  w:10, h:12, c:'rgba(120,255,180,.55)',dur:'3.5s', delay:'1.8s' },
+      { x:56,   y:56,  w:6,  h:9,  c:'rgba(255,150,90,.35)', dur:'5.1s', delay:'2.4s' },
+    ],
+    scans: [
+      { x:60,   y:2,  w:40, h:42, dur:'3.4s', delay:'0s'   },
+      { x:44.5, y:19, w:19, h:26, dur:'4.6s', delay:'1.2s' },
+    ],
+    leds: [
+      { x:38,   y:52,  c:'#ff5c4a', dur:'1.4s', delay:'0s'   },
+      { x:41,   y:59,  c:'#ff6b4a', dur:'2.1s', delay:'.5s'  },
+      { x:56.5, y:69,  c:'#ff8a4a', dur:'1.8s', delay:'.9s'  },
+      { x:70.5, y:69,  c:'#ff5c4a', dur:'2.6s', delay:'1.4s' },
+      { x:82,   y:60,  c:'#ffb15c', dur:'3.2s', delay:'.3s'  },
+      { x:50,   y:87,  c:'#ff8a4a', dur:'2.4s', delay:'2.0s' },
+    ],
+    dust: 6,
+    ambient: true,
+  },
+
+  computer: {
+    screens: [
+      { x:39,   y:24,   w:15.5, h:22,   c:'rgba(90,255,190,.5)',  dur:'3.6s', delay:'0s'   },
+      { x:26.5, y:19,   w:12,   h:18,   c:'rgba(90,200,255,.45)', dur:'4.4s', delay:'.5s'  },
+      { x:55.5, y:24,   w:10,   h:18,   c:'rgba(120,255,200,.5)', dur:'2.9s', delay:'1.1s' },
+      { x:55,   y:45.5, w:7.5,  h:12.5, c:'rgba(120,255,200,.45)',dur:'4.9s', delay:'2.3s' },
+      { x:41,   y:48,   w:11.5, h:12,   c:'rgba(80,220,255,.55)', dur:'3.1s', delay:'.8s'  },
+      { x:66,   y:52,   w:6.5,  h:8,    c:'rgba(120,255,160,.5)', dur:'4.2s', delay:'.2s'  },
+      { x:74,   y:16,   w:13.5, h:22,   c:'rgba(140,200,230,.4)', dur:'5.2s', delay:'1.6s' },
+      { x:74,   y:48,   w:11,   h:14,   c:'rgba(140,200,230,.4)', dur:'4.6s', delay:'2.1s' },
+      { x:42,   y:7,    w:10.5, h:12,   c:'rgba(120,255,180,.45)',dur:'3.9s', delay:'1.4s' },
+      { x:27,   y:32,   w:6,    h:16,   c:'rgba(110,230,255,.4)', dur:'5.6s', delay:'.7s'  },
+      { x:33.5, y:33,   w:5,    h:9,    c:'rgba(120,255,180,.4)', dur:'5.8s', delay:'1.9s' },
+      { x:33.5, y:43.5, w:5,    h:6.5,  c:'rgba(120,255,180,.4)', dur:'4.3s', delay:'2.7s' },
+      { x:3,    y:54.5, w:10.5, h:13.5, c:'rgba(90,230,255,.45)', dur:'3.4s', delay:'2.4s' },
+      { x:85,   y:62,   w:6,    h:6,    c:'rgba(120,255,170,.4)', dur:'3.7s', delay:'1.1s' },
+      { x:6,    y:75.5, w:5.5,  h:5,    c:'rgba(110,255,150,.4)', dur:'6.1s', delay:'.4s'  },
+    ],
+    scans: [
+      { x:39,   y:24, w:15.5, h:22, dur:'3.8s', delay:'0s'   },
+      { x:55.5, y:24, w:10,   h:18, dur:'5.1s', delay:'1.3s' },
+      { x:41,   y:48, w:11.5, h:12, dur:'4.4s', delay:'2.2s' },
+      { x:74,   y:16, w:13.5, h:22, dur:'6.2s', delay:'.6s'  },
+    ],
+    leds: [
+      { x:21.69, y:50.91, c:'#5cff9a', dur:'1.2s', delay:'0.3s' },
+      { x:18.24, y:51.11, c:'#5cff9a', dur:'2.1s', delay:'2.1s' },
+      { x:20.86, y:52.02, c:'#5cff9a', dur:'1.5s', delay:'0.3s' },
+      { x:21.66, y:52.21, c:'#5cff9a', dur:'1.7s', delay:'2.3s' },
+      { x:20.84, y:54.56, c:'#5cff9a', dur:'1.5s', delay:'2.2s' },
+      { x:20.31, y:55.47, c:'#5cff9a', dur:'2.7s', delay:'0.4s' },
+      { x:21.29, y:55.53, c:'#5cff9a', dur:'2.4s', delay:'1.3s' },
+      { x:20.86, y:55.66, c:'#5cff9a', dur:'2.1s', delay:'3.0s' },
+      { x:18.68, y:55.92, c:'#5cff9a', dur:'1.4s', delay:'0.1s' },
+      { x:21.73, y:58.07, c:'#5cff9a', dur:'3.3s', delay:'1.2s' },
+      { x:20.75, y:58.33, c:'#5cff9a', dur:'1.6s', delay:'1.0s' },
+      { x:23.36, y:58.72, c:'#5cff9a', dur:'2.0s', delay:'2.9s' },
+      { x:19.04, y:59.11, c:'#5cff9a', dur:'1.7s', delay:'0.7s' },
+      { x:17.81, y:59.44, c:'#5cff9a', dur:'2.5s', delay:'1.6s' },
+      { x:43.1, y:69.46, c:'#ff5c4a', dur:'3.3s', delay:'2.5s' },
+      { x:11.83, y:87.34, c:'#ff5c4a', dur:'2.0s', delay:'0.6s' },
+      { x:6.37, y:88.79, c:'#ff5c4a', dur:'3.0s', delay:'3.0s' },
+      { x:86.54, y:65.91, c:'#5cff9a', dur:'1.3s', delay:'2.2s' },
+      { x:87.37, y:66.22, c:'#5cff9a', dur:'3.1s', delay:'2.0s' },
+      { x:55.5, y:66.4, c:'#ff8a4a', dur:'1.7s', delay:'2.4s' },
+    ],
+    eyes: [
+      { x:70.53, y:11.74, dur:'12.7s', delay:'2.5s' },
+      { x:89.32, y:12.27, dur:'12.2s', delay:'2.8s' },
+      { x:91.75, y:36.55, dur:'8.3s', delay:'4.4s' },
+      { x:8.71, y:22.13, dur:'10.2s', delay:'5.2s' },
+    ],
+    bats: [
+      { y:11, size:12, dur:'22s', delay:'2s', dir:-1, drop:'5%' },
+      { y:38, size:9,  dur:'28s', delay:'9s', dir:1,  drop:'-3%' },
+    ],
+    dust: 10,
+    ambient: true,
+  },
+
+  armory: {
+    screens: [],
+    lamps: [
+      { x:41.2, y:9.4, w:18.0, h:4.5, dur:'8.2s', delay:'0.7s' },
+      { x:33.3, y:31.4, w:10.7, h:3.6, dur:'6.2s', delay:'2.8s' },
+      { x:52.5, y:31.4, w:6.7, h:3.6, dur:'6.1s', delay:'2.8s' },
+      { x:63.7, y:31.4, w:6.9, h:3.6, dur:'6.6s', delay:'0.4s' },
+      { x:78.8, y:31.4, w:9.0, h:3.6, dur:'4.9s', delay:'3.4s' },
+      { x:29.9, y:34.5, w:18.2, h:31.0, dur:'4.9s', delay:'0.7s' },
+      { x:50.5, y:34.5, w:9.9, h:42.0, dur:'5.7s', delay:'2.5s' },
+      { x:62.2, y:34.5, w:9.9, h:42.0, dur:'7.7s', delay:'1.7s' },
+      { x:74.9, y:34.5, w:15.8, h:34.5, dur:'6.3s', delay:'2.8s' },
+    ],
+    leds: [],
+    eyes: [
+      { x:20.14, y:14.3, dur:'11.4s', delay:'2.1s' },
+    ],
+    bats: [
+      { y:9,  size:16, dur:'17s', delay:'0s',  dir:1,  drop:'7%'  },
+      { y:24, size:11, dur:'23s', delay:'5s',  dir:-1, drop:'-5%' },
+      { y:15, size:9,  dur:'27s', delay:'12s', dir:1,  drop:'10%' },
+    ],
+    dust: 16,
+    ambient: false,
+  },
+
+  batmobile: {
+    screens: [
+      { x:44, y:24, w:24, h:28, c:'rgba(90,255,190,.5)',  dur:'3.3s', delay:'0s'   },
+      { x:24, y:29, w:17, h:22, c:'rgba(120,255,180,.5)', dur:'4.2s', delay:'.7s'  },
+      { x:69, y:29, w:22, h:22, c:'rgba(120,255,200,.5)', dur:'3.7s', delay:'1.3s' },
+      { x:46, y:54, w:9,  h:12, c:'rgba(120,255,180,.55)',dur:'2.8s', delay:'.4s'  },
+      { x:56, y:54, w:9,  h:12, c:'rgba(120,255,180,.55)',dur:'3.5s', delay:'1.8s' },
+      { x:49, y:5,  w:12, h:9,  c:'rgba(120,255,190,.45)',dur:'4.8s', delay:'.9s'  },
+      { x:62, y:6,  w:9,  h:7,  c:'rgba(120,255,190,.4)', dur:'5.3s', delay:'2.2s' },
+      { x:1,  y:3,  w:5,  h:4,  c:'rgba(120,255,160,.5)', dur:'3.9s', delay:'1.5s' },
+    ],
+    scans: [
+      { x:44, y:24, w:24, h:28, dur:'3.4s', delay:'0s'   },
+      { x:24, y:29, w:17, h:22, dur:'4.6s', delay:'1.2s' },
+      { x:69, y:29, w:22, h:22, dur:'5.2s', delay:'2.4s' },
+    ],
+    leds: [
+      { x:26.56, y:52.08, c:'#ff5c4a', dur:'2.6s', delay:'2.5s' },
+      { x:37.14, y:53.26, c:'#ff5c4a', dur:'3.3s', delay:'2.9s' },
+      { x:28.96, y:57.51, c:'#ff5c4a', dur:'3.4s', delay:'2.4s' },
+      { x:34.47, y:58.24, c:'#ff5c4a', dur:'1.9s', delay:'0.5s' },
+      { x:71.59, y:54.88, c:'#ff5c4a', dur:'2.6s', delay:'1.6s' },
+      { x:83.4, y:55.37, c:'#ff5c4a', dur:'2.7s', delay:'0.3s' },
+      { x:74.41, y:60.57, c:'#ff5c4a', dur:'1.6s', delay:'2.8s' },
+      { x:80.37, y:60.66, c:'#ff5c4a', dur:'2.5s', delay:'2.1s' },
+      { x:67.54, y:51.0, c:'#5cff9a', dur:'1.4s', delay:'1.2s' },
+      { x:22.53, y:50.13, c:'#5cff9a', dur:'3.2s', delay:'1.9s' },
+    ],
+    dust: 8,
+    ambient: true,
+  },
+};
+
+function buildFX(){
+  Object.entries(SCENE_FX).forEach(([scene, cfg]) => {
+    const host = document.querySelector('.scene[data-scene="' + scene + '"] .parallax');
+    if (!host) return;
+    const fx = document.createElement('div');
+    fx.className = 'fx';
+
+    if (cfg.ambient) {
+      const a = document.createElement('div');
+      a.className = 'fx-ambient';
+      fx.appendChild(a);
+    }
+
+    (cfg.screens || []).forEach(s => {
+      const el = document.createElement('div');
+      el.className = 'fx-screen';
+      el.style.cssText =
+        'left:' + s.x + '%; top:' + s.y + '%; width:' + s.w + '%; height:' + s.h + '%;' +
+        'background:radial-gradient(60% 60% at 50% 50%, ' + s.c + ', transparent 72%);' +
+        '--dur:' + s.dur + '; --delay:' + s.delay + ';';
+      fx.appendChild(el);
+    });
+
+    (cfg.scans || []).forEach(s => {
+      const el = document.createElement('div');
+      el.className = 'fx-scan';
+      el.style.cssText =
+        'left:' + s.x + '%; top:' + s.y + '%; width:' + s.w + '%; height:' + s.h + '%;' +
+        '--dur:' + s.dur + '; --delay:' + s.delay + ';';
+      fx.appendChild(el);
+    });
+
+    (cfg.lamps || []).forEach(l => {
+      const el = document.createElement('div');
+      el.className = 'fx-lamp';
+      el.style.cssText =
+        'left:' + l.x + '%; top:' + l.y + '%; width:' + l.w + '%; height:' + l.h + '%;' +
+        '--dur:' + l.dur + '; --delay:' + l.delay + ';';
+      fx.appendChild(el);
+    });
+
+    (cfg.leds || []).forEach(d => {
+      const el = document.createElement('div');
+      el.className = 'fx-led';
+      el.style.cssText =
+        'left:' + d.x + '%; top:' + d.y + '%; color:' + d.c + ';' +
+        '--dur:' + d.dur + '; --delay:' + d.delay + ';';
+      fx.appendChild(el);
+    });
+
+    (cfg.waters || []).forEach(w => {
+      const el = document.createElement('div');
+      el.className = 'fx-water';
+      el.style.cssText = 'left:' + w.x + '%; top:' + w.y + '%; width:' +
+        w.w + '%; height:' + w.h + '%;';
+      fx.appendChild(el);
+    });
+    (cfg.eyes || []).forEach(e => {
+      const el = document.createElement('div');
+      el.className = 'fx-eye';
+      el.style.cssText =
+        'left:' + e.x + '%; top:' + e.y + '%;' +
+        '--dur:' + e.dur + '; --delay:' + e.delay + ';';
+      fx.appendChild(el);
+    });
+    if (cfg.splash) {
+      const el = document.createElement('div');
+      el.className = 'fx-splash';
+      el.style.cssText = 'left:' + cfg.splash.x + '%; top:' + cfg.splash.y + '%; width:' +
+        cfg.splash.w + '%; height:' + cfg.splash.h + '%;';
+      fx.appendChild(el);
+    }
+    if (cfg.ripple) {
+      const el = document.createElement('div');
+      el.className = 'fx-ripple';
+      el.style.cssText = 'left:' + cfg.ripple.x + '%; top:' + cfg.ripple.y + '%; width:' +
+        cfg.ripple.w + '%; height:' + cfg.ripple.h + '%;';
+      fx.appendChild(el);
+    }
+
+    (cfg.bats || []).forEach(b => {
+      const el = document.createElement('div');
+      el.className = 'fx-bat';
+      const rightToLeft = b.dir === -1;
+      el.style.cssText =
+        'top:' + b.y + '%; left:0;' +
+        '--size:' + b.size + 'px; --dur:' + b.dur + '; --delay:' + b.delay + ';' +
+        '--dir:' + b.dir + '; --drop:' + b.drop + ';' +
+        '--eye:' + (7 + Math.random() * 5).toFixed(1) + 's;' +
+        '--from:' + (rightToLeft ? '112%' : '-10%') + ';' +
+        '--to:'   + (rightToLeft ? '-10%' : '112%') + ';';
+      el.innerHTML = '<div class="bob">' +
+        BAT_F1.replace('<svg', '<svg class="f1"') +
+        BAT_F2.replace('<svg', '<svg class="f2"') +
+        '<span class="eye"></span>' +
+        '</div>';
+      fx.appendChild(el);
+    });
+
+    for (let i = 0; i < (cfg.dust || 0); i++) {
+      const el = document.createElement('div');
+      el.className = 'fx-dust';
+      el.style.cssText =
+        'left:' + (Math.random() * 100).toFixed(1) + '%;' +
+        'top:'  + (55 + Math.random() * 45).toFixed(1) + '%;' +
+        '--dx:' + (Math.random() * 40 - 20).toFixed(0) + 'px;' +
+        '--dur:' + (10 + Math.random() * 10).toFixed(1) + 's;' +
+        '--delay:-' + (Math.random() * 12).toFixed(1) + 's;';
+      fx.appendChild(el);
+    }
+
+    host.appendChild(fx);
+  });
+}
+buildFX();
+
+
+const stage = document.getElementById('stage');
+const backBtn = document.getElementById('backBtn');
+const fadeOverlay = document.getElementById('fadeOverlay');
+const startScreen = document.getElementById('startScreen');
+const startBtn = document.getElementById('startBtn');
+
+const AREA_TITLES = {
+  computer:'EXPERIENCE', armory:'ABOUT ME', batmobile:'PAST WORK',
+  computer_zoom:'THE BATCOMPUTER', armory_zoom:'THE SUIT', batmobile_zoom:'THE COCKPIT',
+};
+const PARENT = {
+  overview:null, computer:'overview', armory:'overview', batmobile:'overview',
+  computer_zoom:'computer', armory_zoom:'armory', batmobile_zoom:'batmobile',
+};
+let currentScene = 'overview';
+const REDUCE_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- parallax panning on mouse move ---------- */
+let rafId = null, targetX = 0, targetY = 0, curX = 0, curY = 0;
+
+function onPointerMove(e) {
+  const rect = stage.getBoundingClientRect();
+  // -1 .. 1 from center
+  targetX = ((e.clientX - rect.left) / rect.width  - 0.5) * 2;
+  targetY = ((e.clientY - rect.top)  / rect.height - 0.5) * 2;
+  if (!rafId) rafId = requestAnimationFrame(tick);
+}
+
+function tick() {
+  // ease toward the pointer for weight instead of a rigid 1:1 follow
+  curX += (targetX - curX) * 0.08;
+  curY += (targetY - curY) * 0.08;
+
+  const active = stage.querySelector('.scene.active .parallax');
+  if (active) {
+    const depth = parseFloat(active.dataset.depth) || 12;
+    // negative = art drifts opposite the cursor, which reads as looking around
+    active.style.transform =
+      'scale(1.035) translate3d(' + (-curX * depth) + 'px,' + (-curY * depth * 0.6) + 'px,0)';
+  }
+
+  if (Math.abs(targetX - curX) > 0.001 || Math.abs(targetY - curY) > 0.001) {
+    rafId = requestAnimationFrame(tick);
+  } else {
+    rafId = null;
+  }
+}
+
+function resetParallax() {
+  targetX = 0; targetY = 0;
+  if (!rafId) rafId = requestAnimationFrame(tick);
+}
+
+if (!REDUCE_MOTION && window.matchMedia('(hover: hover)').matches) {
+  stage.addEventListener('mousemove', onPointerMove);
+  stage.addEventListener('mouseleave', resetParallax);
+}
+
+/* ---------- fade-to-black scene transition ---------- */
+function switchScene(target) {
+  const current = stage.querySelector('.scene.active');
+  const next = stage.querySelector('.scene[data-scene="' + target + '"]');
+  if (!next || next === current) return;
+  closePanel();
+
+  const doSwap = () => {
+    current.classList.remove('active');
+    // clear the outgoing scene's pan so it returns centered next visit
+    const oldPx = current.querySelector('.parallax');
+    if (oldPx) oldPx.style.transform = 'scale(1.035)';
+    next.classList.add('active');
+    curX = curY = targetX = targetY = 0;
+    currentScene = target;
+    if (window.setBackdrop) setBackdrop(target);
+    backBtn.style.display = target === 'overview' ? 'none' : 'inline-flex';
+    closeAllPopups();
+    if (CONTENT[target]) setTimeout(() => openPopup(target), 120);
+    backBtn.textContent = (PARENT[target] === 'overview'
+      ? 'RETURN TO OVERVIEW'
+      : 'BACK TO ' + AREA_TITLES[PARENT[target]]) + '  [ESC]';
+  };
+
+  if (REDUCE_MOTION) { doSwap(); return; }
+
+  fadeOverlay.classList.add('active');
+  setTimeout(() => {
+    doSwap();
+    requestAnimationFrame(() => fadeOverlay.classList.remove('active'));
+  }, 360);
+}
+
+document.querySelectorAll('.hotspot, .zone').forEach(h => {
+  h.addEventListener('click', () => switchScene(h.dataset.target));
+  h.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); switchScene(h.dataset.target); }
+  });
+  const lbl = document.querySelector('.zone-label[data-for="' + h.dataset.target + '"]');
+  if (lbl) {
+    const on  = () => lbl.classList.add('show');
+    const off = () => lbl.classList.remove('show');
+    h.addEventListener('mouseenter', on);
+    h.addEventListener('mouseleave', off);
+    h.addEventListener('focus', on);
+    h.addEventListener('blur', off);
+  }
+});
+backBtn.addEventListener('click', () => switchScene(PARENT[currentScene] || 'overview'));
+
+/* ---------- content panel ---------- */
+function closePanel(){}
+
+/* ---------- start screen ---------- */
+function dismissStart() {
+  if (!startScreen.isConnected) return;
+  AUDIO.start(); AUDIO.ping();
+  startScreen.classList.add('hidden');
+  setTimeout(() => startScreen.remove(), REDUCE_MOTION ? 0 : 650);
+}
+startBtn.addEventListener('click', dismissStart);
+
+document.addEventListener('keydown', e => {
+  if (startScreen.isConnected && (e.key === 'Enter' || e.key === ' ')) {
+    e.preventDefault(); dismissStart(); return;
+  }
+  if (e.key === 'Escape') {
+    if (currentScene !== 'overview') { e.preventDefault(); AUDIO.ping(); switchScene(PARENT[currentScene] || 'overview'); }
+  }
+});
+/* ---------- audio: ambience bed + theme under it, click on every action ---------- */
+const AUDIO = (function(){
+  const cave  = document.getElementById('sndCave');
+  const theme = document.getElementById('sndTheme');
+  const click = document.getElementById('sndClick');
+  const btn   = document.getElementById('audioBtn');
+  if (!cave || !theme || !click || !btn) {
+    return { start(){}, ping(){} };          // no audio present - stay silent, don't throw
+  }
+  const LVL = { cave: 0.40, theme: 0.16, click: 0.45 };   // theme sits under the ambience
+  let on = true, started = false;
+
+  function fade(el, to, ms){
+    const from = el.volume, t0 = performance.now();
+    (function step(now){
+      const k = Math.min(1, (now-t0)/ms);
+      el.volume = from + (to-from)*k;
+      if (k < 1) requestAnimationFrame(step);
+    })(performance.now());
+  }
+  function start(){
+    if (started) return; started = true;
+    cave.volume = 0; theme.volume = 0;
+    cave.play().catch(()=>{}); theme.play().catch(()=>{});
+    fade(cave, LVL.cave, 2500);
+    setTimeout(() => fade(theme, LVL.theme, 4000), 900);   // ambience establishes first
+  }
+  function toggle(){
+    on = !on;
+    btn.classList.toggle('muted', !on);
+    fade(cave,  on ? LVL.cave  : 0, 500);
+    fade(theme, on ? LVL.theme : 0, 500);
+  }
+  function ping(){
+    if (!on || !started) return;
+    const s = click.cloneNode();      // clone so rapid clicks overlap instead of cutting off
+    s.volume = LVL.click;
+    s.play().catch(()=>{});
+  }
+  btn.addEventListener('click', e => { e.stopPropagation(); toggle(); });
+  return { start, ping };
+})();
+
+/* click sound on every navigation action */
+document.addEventListener('click', e => {
+  if (e.target.closest('.zone, .popup-close, .back-btn, .start-btn, .hotspot')) AUDIO.ping();
+}, true);
+
+/* ---------- page backdrop: blurred scene bleed, bats and motes ---------- */
+(function(){
+  const bg = document.getElementById('pageBg');
+  const art = document.getElementById('bgArt');
+  if (!bg || !art) return;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  art.style.backgroundImage = 'url("' + IMAGES.overview + '")';
+
+  if (!reduce) {
+    const bats = [
+      { y:14, size:22, dur:'38s', delay:'0s',   dir:1  },
+      { y:31, size:15, dur:'52s', delay:'-14s', dir:-1 },
+      { y:63, size:18, dur:'44s', delay:'-28s', dir:1  },
+      { y:79, size:12, dur:'61s', delay:'-8s',  dir:-1 },
+    ];
+    bats.forEach(b => {
+      const el = document.createElement('div');
+      el.className = 'bg-bat';
+      const rtl = b.dir === -1;
+      el.style.cssText = 'top:' + b.y + '%; left:0;' +
+        '--size:' + b.size + 'px; --dur:' + b.dur + '; --delay:' + b.delay + '; --dir:' + b.dir + ';' +
+        '--from:' + (rtl ? '112vw' : '-12vw') + '; --to:' + (rtl ? '-12vw' : '112vw') + ';';
+      el.innerHTML = '<div class="bob">' +
+        BAT_F1.replace('<svg','<svg class="f1"') + BAT_F2.replace('<svg','<svg class="f2"') + '</div>';
+      bg.appendChild(el);
+    });
+    for (let i = 0; i < 22; i++) {
+      const d = document.createElement('div');
+      d.className = 'bg-dust';
+      d.style.cssText =
+        'left:' + (Math.random()*100).toFixed(1) + '%;' +
+        'top:'  + (60 + Math.random()*45).toFixed(1) + '%;' +
+        '--dx:' + (Math.random()*60-30).toFixed(0) + 'px;' +
+        '--dur:' + (18 + Math.random()*16).toFixed(1) + 's;' +
+        '--delay:-' + (Math.random()*24).toFixed(1) + 's;';
+      bg.appendChild(d);
+    }
+  }
+  // the backdrop follows whichever scene you are in
+  window.setBackdrop = function(scene){
+    const src = IMAGES[scene] || IMAGES.overview;
+    if (src) art.style.backgroundImage = 'url("' + src + '")';
+  };
+})();
+
+/* ---------- animated cursor ---------- */
+document.addEventListener('DOMContentLoaded', function(){
+  const bc = document.getElementById('batCursor');
+  const frame = document.querySelector('.crt-frame');
+  if (!bc || !frame || !window.matchMedia('(hover: hover)').matches) return;
+  const HOT = '.zone, .popup-close, .back-btn, .start-btn, .screen-inner a, [role="button"]';
+  let tx=0, ty=0, cx=0, cy=0, raf=null;
+  function loop(){
+    cx += (tx-cx)*0.35; cy += (ty-cy)*0.35;      // slight easing so it feels weighted
+    bc.style.transform = 'translate(' + (cx-16) + 'px,' + (cy-16) + 'px)';
+    raf = (Math.abs(tx-cx)>0.1 || Math.abs(ty-cy)>0.1) ? requestAnimationFrame(loop) : null;
+  }
+  document.addEventListener('mousemove', e => {
+    tx = e.clientX; ty = e.clientY;
+    if (!bc.dataset.init) {                 // avoid a fly-in from 0,0 on first move
+      cx = tx; cy = ty; bc.dataset.init = '1';
+      bc.style.transform = 'translate(' + (cx-16) + 'px,' + (cy-16) + 'px)';
+    }
+    if (!raf) raf = requestAnimationFrame(loop);
+    const inFrame = !!(e.target.closest && e.target.closest('.crt-frame'));
+    bc.classList.toggle('show', inFrame);
+    bc.classList.toggle('hot', inFrame && !!e.target.closest(HOT));
+  });
+  frame.addEventListener('mouseenter', () => bc.classList.add('show'));
+  frame.addEventListener('mouseleave', () => bc.classList.remove('show'));
+  document.addEventListener('mousedown', () => bc.classList.add('click'));
+  document.addEventListener('mouseup',   () => bc.classList.remove('click'));
+});
+
+</script>
+
+<div id="batCursor" aria-hidden="true">
+  <span class="ring"></span>
+  <img class="sprite logo" src="assets/ui/cursor-logo.png" alt="">
+  <img class="sprite cowl" src="assets/ui/cursor-cowl.png" alt="">
+</div>
+
+</body>
+</html>
