@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>The Batcave — Portfolio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
@@ -180,6 +180,272 @@
   @media (prefers-reduced-motion: reduce){
     .bg-grid, .bg-bat, .bg-dust{ animation:none; }
     .bg-bat, .bg-dust{ display:none; }
+  }
+
+
+  /* ================= TOUCH + SMALL SCREENS ================= */
+  html{ -webkit-text-size-adjust:100%; }
+  button, .zone{ touch-action:manipulation; }
+
+  /* no hover on touch, so the area names have to be visible by default */
+  @media (hover:none){
+    .zone-label{ opacity:.92; }
+    .zone .line{ stroke-opacity:.75; }
+    .zones:hover .zone:not(:hover) .line{ stroke-opacity:.75; }
+    /* fatter invisible tap targets */
+    .popup-close{ padding:10px; margin:-10px; }
+    .back-btn, .audio-btn{ padding:10px; margin:-10px; }
+  }
+
+  /* phones: the 16:9 stage becomes a band, so tighten everything around it */
+  @media (max-width: 900px){
+    :root{ --stage-max:100vw; }
+    .crt-frame{ border-radius:0; }
+    .corner{ width:12px; height:12px; }
+    .corner.tl,.corner.tr{ top:8px; }
+    .corner.bl,.corner.br{ bottom:8px; }
+    .corner.tl,.corner.bl{ left:8px; }
+    .corner.tr,.corner.br{ right:8px; }
+
+    .title-plate{ font-size:10px; letter-spacing:1.5px; top:10px; }
+    .area-eyebrow{ font-size:9px; letter-spacing:1.5px; top:10px; left:12px; padding:4px 7px; }
+    .back-btn{ font-size:9px; letter-spacing:1.5px; top:10px; right:12px; }
+    .audio-btn{ font-size:9px; letter-spacing:1.5px; left:30px; bottom:11px; }
+    .audio-btn .swap.b{ font-size:8px; letter-spacing:1px; }
+    .zone-label{ font-size:9px; letter-spacing:1.5px; }
+
+    /* the readout takes over the screen rather than floating in it */
+    .screen-popup{
+      width:94%; height:92%;
+      border-width:clamp(10px, 2.6vw, 18px);
+    }
+    .screen-inner{ padding:14px 15px 18px; }
+    .screen-inner h2{ font-size:15px; padding-right:64px; }
+    .screen-inner .flavor{ font-size:9.5px; }
+    .screen-inner h3{ font-size:11.5px; letter-spacing:.8px; }
+    .screen-inner .meta,
+    .screen-inner .tags{ font-size:11px; }
+    .screen-inner p{ font-size:11.5px; line-height:1.62; }
+    .screen-inner .entry{ padding-top:10px; margin-top:10px; }
+    .popup-close{ font-size:10px; top:10px; right:12px; }
+
+    .start-title{ font-size:clamp(26px,10vw,46px); letter-spacing:2px; }
+    .start-sub{ font-size:12px; padding:0 8px; }
+    .start-eyebrow, .start-hint{ font-size:9.5px; }
+    .start-btn{ font-size:12px; padding:13px 22px; }
+
+    /* trim the backdrop: cheaper, and less noise on a small screen */
+    .bg-dust{ display:none; }
+    .bg-grid{ opacity:.035; }
+  }
+
+  @media (max-width: 480px){
+    .screen-inner h2{ font-size:13px; }
+    .screen-inner h3{ font-size:10.5px; }
+    .screen-inner p, .screen-inner .meta, .screen-inner .tags{ font-size:10.5px; }
+  }
+
+  /* portrait phones: the scene is a thin band, so suggest turning the device */
+  .stage.popup-open .back-btn,
+  .stage.popup-open .audio-btn,
+  .stage.popup-open .area-eyebrow{
+    opacity:0; pointer-events:none; transition:opacity .2s;
+  }
+
+  .rotate-hint{
+    position:fixed; left:50%; bottom:calc(6vh + env(safe-area-inset-bottom));
+    transform:translateX(-50%); z-index:60;
+    display:none; align-items:center; gap:9px;
+    padding:9px 14px; border:1px solid var(--cyan-dim); border-radius:3px;
+    background:rgba(4,6,10,.88);
+    font-family:var(--font-display); font-weight:600; font-size:9px; letter-spacing:2px;
+    color:var(--cyan); white-space:nowrap;
+    animation:hintFade .4s ease both;
+  }
+  @keyframes hintFade{ from{ opacity:0; transform:translateX(-50%) translateY(8px); } }
+  .rotate-hint .phone{
+    width:9px; height:14px; border:1.5px solid currentColor; border-radius:2px; flex:none;
+    animation:tilt 2.2s ease-in-out infinite;
+  }
+  @keyframes tilt{ 0%,55%,100%{ transform:rotate(0); } 75%,90%{ transform:rotate(-90deg); } }
+  @media (max-width:900px) and (orientation:portrait){ .rotate-hint{ display:flex; } }
+
+
+  /* ---------- portrait phones: art band on top, real buttons underneath ---------- */
+  .mobile-nav{ display:none; }
+
+  @media (max-width:900px) and (orientation:portrait){
+    .crt-frame{
+      width:100vw; height:100vh; height:100dvh;
+      aspect-ratio:auto; max-height:none;
+    }
+    /* the scene keeps its 16:9 shape and sits in the upper part of the screen */
+    .scene{
+      inset:auto; left:0; right:0;
+      top:calc(env(safe-area-inset-top) + 46px);
+      height:auto; width:100%; aspect-ratio:16 / 9;
+    }
+    .mobile-nav{
+      position:absolute; left:0; right:0;
+      top:calc(env(safe-area-inset-top) + 46px + 56.25vw + 18px);
+      bottom:auto;
+      display:flex; flex-direction:column; gap:10px;
+      padding:0 18px; z-index:20;
+    }
+    .mobile-nav button{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      width:100%; min-height:52px; padding:14px 16px;
+      background:rgba(10,18,28,.85);
+      border:1px solid var(--cyan-dim); border-radius:3px;
+      color:var(--cyan);
+      font-family:var(--font-display); font-weight:700; font-size:12px; letter-spacing:2.5px;
+      text-align:left;
+    }
+    .mobile-nav button .sub{
+      font-family:var(--font-body); font-size:10px; letter-spacing:.5px;
+      color:rgba(150,214,209,.85); font-weight:400;
+    }
+    .mobile-nav button:active{ background:rgba(45,227,255,.16); border-color:var(--cyan); }
+    .mobile-nav button.primary{ border-color:var(--marker); color:var(--marker); }
+    .mobile-nav button.primary:active{ background:rgba(255,194,51,.16); }
+    .stage.popup-open .mobile-nav{ opacity:0; pointer-events:none; }
+
+    /* the readout now has the whole screen to work with */
+    .screen-popup{ width:94%; height:min(84%, 620px); }
+    .rotate-hint{ display:none; }
+
+    .back-btn{ top:calc(env(safe-area-inset-top) + 14px); right:16px; }
+    .audio-btn{ top:calc(env(safe-area-inset-top) + 14px); left:16px; bottom:auto; }
+    .corner{ display:none; }
+  }
+
+
+  /* ---------- hover previews inside a readout ---------- */
+  .entry .preview{
+    display:grid; grid-template-columns:1fr 1fr; gap:8px;
+    margin:0 0 0 16px; max-height:0; opacity:0; overflow:hidden;
+    transition:max-height .32s ease, opacity .24s ease, margin-top .32s ease;
+  }
+  .entry:hover .preview, .entry:focus-within .preview{ max-height:220px; opacity:1; margin-top:10px; }
+  .entry .preview img,
+  .entry .preview video{
+    display:block; width:100%; aspect-ratio:16/10; object-fit:cover;
+    border:1px solid rgba(125,236,255,.28); border-radius:2px;
+    background:#04201f;
+  }
+  /* projects are clickable */
+  .entry.is-case{ cursor:none; }
+  .entry.is-case h3{ transition:color .15s; }
+  .entry.is-case:hover h3{ color:var(--marker); }
+  .entry .cta{
+    display:inline-block; margin:6px 0 0 16px;
+    font-family:var(--font-display); font-weight:700; font-size:10px; letter-spacing:2px;
+    color:var(--marker); opacity:.75; transition:opacity .15s, transform .15s;
+  }
+  .entry.is-case:hover .cta{ opacity:1; transform:translateX(3px); }
+
+  /* ---------- case study view ---------- */
+  .case-view{
+    position:absolute; left:50%; top:50%;
+    transform:translate(-50%,-50%) scale(.96);
+    width:min(76%, 1080px); height:min(88%, 720px);
+    z-index:38; opacity:0; pointer-events:none;
+    border-style:solid; border-width:clamp(14px,1.6vw,24px);
+    border-image:url("assets/ui/screen-frame.png") 88 fill stretch;
+    transition:opacity .3s ease, transform .3s cubic-bezier(.2,.7,.3,1);
+  }
+  .case-view.open{ opacity:1; transform:translate(-50%,-50%) scale(1); pointer-events:auto; }
+  .case-view::before{
+    content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(130% 95% at 50% -10%, rgba(16,86,84,.5), transparent 62%),
+      linear-gradient(180deg, rgba(4,32,34,.9) 0%, rgba(2,20,23,.96) 100%);
+  }
+  .case-view::after{
+    content:""; position:absolute; inset:0; pointer-events:none; z-index:3;
+    background:repeating-linear-gradient(180deg, rgba(0,0,0,.20) 0 1px, transparent 1px 3px);
+  }
+  .case-inner{
+    position:absolute; inset:0; z-index:1; overflow-y:auto;
+    padding:22px 26px 26px;
+    scrollbar-width:thin; scrollbar-color:rgba(125,236,255,.35) transparent;
+  }
+  .case-inner::-webkit-scrollbar{ width:7px; }
+  .case-inner::-webkit-scrollbar-thumb{ background:rgba(125,236,255,.32); border-radius:4px; }
+  .case-inner h2{
+    font-family:var(--font-display); font-weight:700; font-size:20px; letter-spacing:1.5px;
+    color:#7df0ff; margin:0 0 6px; padding-right:80px;
+    text-shadow:0 0 14px rgba(125,240,255,.5);
+  }
+  .case-inner .kicker{
+    font-family:var(--font-body); font-size:11px; letter-spacing:1px; text-transform:uppercase;
+    color:rgba(140,205,200,.85); margin:0 0 14px; display:block;
+  }
+  .case-facts{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:12px;
+    border-top:1px solid rgba(125,236,255,.3);
+    border-bottom:1px solid rgba(125,236,255,.16);
+    padding:12px 0; margin:0 0 16px;
+  }
+  .case-facts div span{
+    display:block; font-family:var(--font-display); font-weight:600; font-size:9px;
+    letter-spacing:1.5px; color:rgba(140,205,200,.8); margin-bottom:3px;
+  }
+  .case-facts div p{ margin:0; font-family:var(--font-body); font-size:12px; color:#d3efe9; }
+  .case-inner h3{
+    font-family:var(--font-display); font-weight:600; font-size:13px; letter-spacing:1.2px;
+    text-transform:uppercase; color:#e9fbff; margin:18px 0 6px;
+    display:flex; align-items:baseline; gap:10px;
+  }
+  .case-inner h3::before{
+    content:""; width:6px; height:6px; flex:none; background:var(--marker);
+    box-shadow:0 0 8px rgba(255,194,51,.85); transform:translateY(-1px);
+  }
+  .case-inner p{
+    font-family:var(--font-body); font-size:13px; line-height:1.65;
+    color:#d3efe9; margin:0 0 10px; padding-left:16px;
+    overflow-wrap:break-word;
+  }
+  .case-inner ul{ margin:0 0 10px; padding-left:34px; }
+  .case-inner li{
+    font-family:var(--font-body); font-size:13px; line-height:1.6; color:#d3efe9; margin-bottom:5px;
+  }
+  .case-shots{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0 4px 16px; }
+  .case-shots img{
+    display:block; width:100%; aspect-ratio:16/10; object-fit:cover;
+    border:1px solid rgba(125,236,255,.28); border-radius:2px;
+  }
+  .case-close{
+    position:absolute; top:14px; right:16px; z-index:4;
+    display:flex; align-items:center; gap:7px;
+    padding:0; background:none; border:none;
+    font-family:var(--font-display); font-weight:700; font-size:12px; letter-spacing:2.5px;
+    color:var(--marker); opacity:.9; line-height:1;
+    text-shadow:0 0 10px rgba(255,194,51,.6);
+  }
+  .case-close:hover{ opacity:1; color:#ffe28a; }
+  .case-close .x{ position:relative; display:inline-block; width:9px; height:9px; flex:none; }
+  .case-close .x::before, .case-close .x::after{
+    content:""; position:absolute; left:0; top:4px; width:100%; height:2px; background:currentColor;
+  }
+  .case-close .x::before{ transform:rotate(45deg); }
+  .case-close .x::after{ transform:rotate(-45deg); }
+
+  @media (hover:none){
+    /* no hover on touch, so previews stay open */
+    .entry .preview{ max-height:220px; opacity:1; margin-top:10px; }
+  }
+  @media (max-width:900px){
+    .case-view{ width:94%; height:min(88%,640px); border-width:clamp(10px,2.6vw,18px); }
+    .case-inner{ padding:15px 16px 20px; }
+    .case-inner h2{ font-size:15px; padding-right:66px; }
+    .case-inner .kicker{ font-size:9.5px; }
+    .case-facts{ grid-template-columns:1fr; gap:8px; }
+    .case-inner h3{ font-size:11.5px; }
+    .case-inner p, .case-inner li{ font-size:11.5px; }
+    .case-shots{ grid-template-columns:1fr; }
+    .case-close{ font-size:10px; padding:10px; margin:-10px; }
+    .entry .preview{ grid-template-columns:1fr; max-height:none; }
   }
 
   /* ---------- outer frame ---------- */
@@ -486,9 +752,9 @@
 
   /* ================= SCREEN POPUP ================= */
   .screen-popup{
-    position:absolute; z-index:16;
+    position:absolute; z-index:34;
     left:50%; top:50%;
-    width:min(52vw, 860px); height:min(68vh, 620px);
+    width:min(64%, 860px); height:min(78%, 620px);
     transform:translate(-50%,-50%) scale(.94);
     opacity:0; pointer-events:none;
     border-style:solid; border-width:clamp(18px, 1.9vw, 30px);
@@ -553,6 +819,7 @@
     color:rgba(150,214,209,.9); margin:0 0 4px; padding-left:16px;
   }
   .screen-inner p{
+    overflow-wrap:break-word; hyphens:auto;
     font-family:var(--font-body); font-size:13.5px; line-height:1.7;
     color:#d3efe9; margin:0 0 8px; padding-left:16px;
   }
@@ -836,6 +1103,8 @@
 </head>
 <body>
 
+<div class="rotate-hint" id="rotateHint"><span class="phone"></span>ROTATE FOR FULL VIEW</div>
+
 <div id="pageBg" aria-hidden="true">
   <div class="bg-art" id="bgArt"></div>
   <div class="bg-grid"></div>
@@ -850,6 +1119,8 @@
   <div class="stage" id="stage">
 
     <button class="back-btn" id="backBtn">BACK →</button>
+    <nav class="mobile-nav" id="mobileNav" aria-label="Sections"></nav>
+
     <button class="audio-btn" id="audioBtn" aria-label="Toggle sound">
       <span class="bars"><i></i><i></i><i></i><i></i></span><span class="label"><span class="sizer">BAT CAVE — DANNY ELFMAN</span><span class="swap a">AUDIO</span><span class="swap b">BAT CAVE — DANNY ELFMAN</span></span>
     </button>
@@ -958,22 +1229,29 @@
       <div class="parallax" data-depth="5"><div class="art" id="art-computer_zoom"></div></div>
       <div class="vignette"></div>
       <div class="area-eyebrow">EXPERIENCE // THE BATCOMPUTER</div>
-      <div class="screen-popup" id="pop-computer_zoom"><button class="popup-close" aria-label="Exit"><span>EXIT</span><span class="x"></span></button><div class="screen-inner"></div></div>
     </section>
 
     <section class="scene" data-scene="armory_zoom">
       <div class="parallax" data-depth="5"><div class="art" id="art-armory_zoom"></div></div>
       <div class="vignette"></div>
       <div class="area-eyebrow">ABOUT ME // THE SUIT</div>
-      <div class="screen-popup" id="pop-armory_zoom"><button class="popup-close" aria-label="Exit"><span>EXIT</span><span class="x"></span></button><div class="screen-inner"></div></div>
     </section>
 
     <section class="scene" data-scene="batmobile_zoom">
       <div class="parallax" data-depth="5"><div class="art" id="art-batmobile_zoom"></div></div>
       <div class="vignette"></div>
       <div class="area-eyebrow">PAST WORK // THE COCKPIT</div>
-      <div class="screen-popup" id="pop-batmobile_zoom"><button class="popup-close" aria-label="Exit"><span>EXIT</span><span class="x"></span></button><div class="screen-inner"></div></div>
     </section>
+
+
+    <div class="screen-popup" id="pop-computer_zoom"><button class="popup-close" aria-label="Exit"><span>EXIT</span><span class="x"></span></button><div class="screen-inner"></div></div>
+    <div class="screen-popup" id="pop-armory_zoom"><button class="popup-close" aria-label="Exit"><span>EXIT</span><span class="x"></span></button><div class="screen-inner"></div></div>
+    <div class="screen-popup" id="pop-batmobile_zoom"><button class="popup-close" aria-label="Exit"><span>EXIT</span><span class="x"></span></button><div class="screen-inner"></div></div>
+
+    <div class="case-view" id="caseView" aria-hidden="true">
+      <button class="case-close" id="caseClose" aria-label="Close case study">BACK<span class="x"></span></button>
+      <div class="case-inner" id="caseInner"></div>
+    </div>
 
     <div id="fadeOverlay" aria-hidden="true"></div>
 
@@ -1011,49 +1289,13 @@ const CONTENT = {
   computer_zoom: {
     heading: 'Experience',
     flavor: 'Mission log \u2014 Batcomputer',
-    body: `
-      <div class="entry">
-        <h3>Eyecare Consultant</h3>
-        <p class="meta">Specsavers \u00b7 Cambridge, ON</p>
-        <p class="meta">May 2023 \u2013 Present</p>
-      </div>
-      <div class="entry">
-        <h3>Project Intern</h3>
-        <p class="meta">Illuminate \u00b7 Toronto, ON (Remote)</p>
-        <p class="meta">June 2023 \u2013 August 2023</p>
-      </div>
-      <div class="entry">
-        <h3>Co-Founder</h3>
-        <p class="meta">Orbit \u00b7 Cambridge, ON (Remote)</p>
-        <p class="meta">Aug 2021 \u2013 June 2022</p>
-      </div>
-      <div class="entry">
-        <h3>Education</h3>
-        <p class="meta">Wilfrid Laurier University \u00b7 Waterloo, ON</p>
-        <p class="meta">BSc Computer Science (Honours) \u00b7 2022\u20132026</p>
-        <p class="meta">Dean\u2019s Honour Roll, 2023</p>
-      </div>`
+    body: `<div class="entry"><h3>Eyecare Consultant</h3><p class="meta">Specsavers \u00b7 Cambridge, ON</p><p class="meta">May 2023 \u2013 Present</p><div class="preview"><img src="assets/work/specsavers-1.jpg" alt="" loading="lazy"><img src="assets/work/specsavers-2.jpg" alt="" loading="lazy"></div></div><div class="entry"><h3>Project Intern</h3><p class="meta">Illuminate \u00b7 Toronto, ON (Remote)</p><p class="meta">June 2023 \u2013 August 2023</p><div class="preview"><img src="assets/work/illuminate-1.jpg" alt="" loading="lazy"><img src="assets/work/illuminate-2.jpg" alt="" loading="lazy"></div></div><div class="entry"><h3>Co-Founder</h3><p class="meta">Orbit \u00b7 Cambridge, ON (Remote)</p><p class="meta">Aug 2021 \u2013 June 2022</p><div class="preview"><img src="assets/work/orbit-1.jpg" alt="" loading="lazy"><video src="assets/work/orbit-2.mp4" poster="assets/work/orbit-2.jpg" autoplay muted loop playsinline preload="metadata"></video></div></div>`
   },
 
   batmobile_zoom: {
     heading: 'Past Work',
-    flavor: 'Case files \u2014 Batmobile',
-    body: `
-      <div class="entry">
-        <h3>Props Assist</h3>
-        <p>Full-stack tool ingesting live NBA odds and player data to generate real-time +EV projections across DraftKings, FanDuel and Caesars.</p>
-        <p class="tags">Python \u00b7 JavaScript \u00b7 HTML/CSS \u00b7 SportsGamesOdds API</p>
-      </div>
-      <div class="entry">
-        <h3>AI Tic-Tac-Toe</h3>
-        <p>Led a team of five. Minimax with Alpha-Beta pruning, plus a Gemini-powered opponent \u2014 play the AI, or watch local AI face Gemini.</p>
-        <p class="tags">Python \u00b7 PyGame \u00b7 Photoshop CS6 \u00b7 Gemini API</p>
-      </div>
-      <div class="entry">
-        <h3>NPO Connect UI</h3>
-        <p>Interface design for a nonprofit collaboration platform, from user research through wireframes to a high-fidelity Figma prototype.</p>
-        <p class="tags">Figma \u00b7 Adobe Photoshop CS6</p>
-      </div>`
+    flavor: 'Case files \u2014 Batmobile \u00b7 tap a project for the case study',
+    body: `<div class="entry is-case" data-case="props-assist" tabindex="0" role="button"><h3>Props Assist</h3><p>Full-stack tool ingesting live NBA odds and player data to surface real-time +EV projections across DraftKings, FanDuel and Caesars.</p><p class="tags">Python \u00b7 JavaScript \u00b7 HTML/CSS \u00b7 SportsGamesOdds API</p><div class="preview"><img src="assets/work/props-assist-1.jpg" alt="" loading="lazy"><img src="assets/work/props-assist-2.jpg" alt="" loading="lazy"></div><span class="cta">VIEW CASE STUDY \u2192</span></div><div class="entry is-case" data-case="ai-tictactoe" tabindex="0" role="button"><h3>AI Tic-Tac-Toe</h3><p>Led a team of five. Minimax with Alpha-Beta pruning, plus a Gemini-powered opponent \u2014 play the AI, or watch local AI face Gemini.</p><p class="tags">Python \u00b7 PyGame \u00b7 Photoshop CS6 \u00b7 Gemini API</p><div class="preview"><img src="assets/work/ai-tictactoe-1.jpg" alt="" loading="lazy"><img src="assets/work/ai-tictactoe-2.jpg" alt="" loading="lazy"></div><span class="cta">VIEW CASE STUDY \u2192</span></div><div class="entry is-case" data-case="npo-connect" tabindex="0" role="button"><h3>NPO Connect UI</h3><p>Interface design for a nonprofit collaboration platform, from user research through wireframes to a high-fidelity prototype.</p><p class="tags">Figma \u00b7 Adobe Photoshop CS6</p><div class="preview"><img src="assets/work/npo-connect-1.jpg" alt="" loading="lazy"><img src="assets/work/npo-connect-2.jpg" alt="" loading="lazy"></div><span class="cta">VIEW CASE STUDY \u2192</span></div>`
   },
 
   armory_zoom: {
@@ -1063,6 +1305,12 @@ const CONTENT = {
       <div class="entry">
         <h3>Howard Huang</h3>
         <p>Computer Science student at Wilfrid Laurier, working across full-stack development, data tooling and user-centered design.</p>
+      </div>
+      <div class="entry">
+        <h3>Education</h3>
+        <p class="meta">Wilfrid Laurier University \u00b7 Waterloo, ON</p>
+        <p class="meta">BSc Computer Science (Honours) \u00b7 2022\u20132026</p>
+        <p class="meta">Dean\u2019s Honour Roll, 2023</p>
       </div>
       <div class="entry">
         <h3>Languages</h3>
@@ -1090,6 +1338,92 @@ const CONTENT = {
   },
 };
 
+const CASE_STUDIES = {
+  'props-assist': {
+    title: 'Props Assist',
+    kicker: 'Live NBA odds \u2192 real-time +EV player projections',
+    facts: [['Role','Solo \u2014 design & build'],['Timeline','2024'],['Stack','Python \u00b7 JS \u00b7 SportsGamesOdds API']],
+    shots: ['assets/work/props-assist-1.jpg','assets/work/props-assist-2.jpg'],
+    sections: [
+      ['The problem', ['<p>Player prop odds move constantly and differ between sportsbooks. Finding a genuine edge means comparing thousands of lines across books faster than a person can refresh tabs.</p>']],
+      ['Approach', ['<ul>'
+        + '<li>Ingest live odds and roughly 10,000 lines of player data through the SportsGamesOdds API.</li>'
+        + '<li>Convert book prices to implied probability, remove the vig, and compare against a projection to compute expected value.</li>'
+        + '<li>Rank by edge so the best opportunities surface first rather than requiring a scan.</li>'
+        + '</ul>']],
+      ['Interface decisions', ['<p>The board is sorted by edge, not by game, because the question a user actually has is \u201cwhere is the value right now\u201d rather than \u201cwhat is Toronto doing tonight\u201d. Book names sit beside each line so the user can act without a second lookup.</p>']],
+      ['Outcome', ['<p>Deployed and running against live data, comparing three sportsbooks in a single view.</p>']],
+    ],
+  },
+  'ai-tictactoe': {
+    title: 'AI Tic-Tac-Toe Simulation',
+    kicker: 'Classical search against a language model',
+    facts: [['Role','Team lead \u2014 5 people'],['Timeline','2024'],['Stack','Python \u00b7 PyGame \u00b7 Gemini API']],
+    shots: ['assets/work/ai-tictactoe-1.jpg','assets/work/ai-tictactoe-2.jpg'],
+    sections: [
+      ['The idea', ['<p>Tic-tac-toe is solved, which makes it a clean testbed: a perfect Minimax player can never lose, so any loss by the language model is a measurable difference in reasoning rather than noise.</p>']],
+      ['What we built', ['<ul>'
+        + '<li>Local two-player mode with custom sprite art made in Photoshop CS6.</li>'
+        + '<li>Minimax with Alpha-Beta pruning as the deterministic opponent.</li>'
+        + '<li>A Gemini-backed opponent, plus a spectator mode pitting the two AIs against each other.</li>'
+        + '</ul>']],
+      ['Leading the team', ['<p>Five people on a small codebase risks constant collisions, so work was split by seam \u2014 game loop, AI, assets, integration \u2014 with the board state as the agreed contract between them.</p>']],
+      ['What I would change', ['<p>Prompting the model with board state as text was the weak link; encoding the board as coordinates rather than a drawn grid produced noticeably fewer illegal moves.</p>']],
+    ],
+  },
+  'npo-connect': {
+    title: 'NPO Connect \u2014 UI/UX Case Study',
+    kicker: 'Collaboration tooling for nonprofits and their stakeholders',
+    facts: [['Role','Lead designer'],['Method','Research \u2192 wireframe \u2192 prototype'],['Tools','Figma \u00b7 Photoshop CS6']],
+    shots: ['assets/work/npo-connect-1.jpg','assets/work/npo-connect-2.jpg'],
+    sections: [
+      ['Context', ['<p>Nonprofits coordinate volunteers, donors and partners across scattered email threads and spreadsheets. NPO Connect was a case study in pulling that into one place without adding overhead for small teams.</p>']],
+      ['Research', ['<ul>'
+        + '<li>Surveys to map how organisations currently track projects.</li>'
+        + '<li>User interviews with staff and stakeholders to find where handoffs break.</li>'
+        + '<li>Usability testing on early flows to check the structure held up.</li>'
+        + '</ul>'
+        , '<p>The recurring theme was duplication: the same update retyped for three different audiences.</p>']],
+      ['Design decisions', ['<p>Projects became the primary object, with stakeholders attached to them, so one update reaches everyone attached rather than being re-sent per channel. Wireframes were tested before any visual design so structural problems surfaced while they were still cheap to fix.</p>']],
+      ['Delivered', ['<p>Wireframes, an interactive prototype and a high-fidelity Figma interface covering project management, stakeholder views and activity tracking.</p>']],
+    ],
+  },
+};
+
+function openCase(id){
+  const c = CASE_STUDIES[id];
+  const view = document.getElementById('caseView');
+  const inner = document.getElementById('caseInner');
+  if (!c || !view || !inner) return;
+  inner.innerHTML =
+    '<h2>' + c.title + '</h2><span class="kicker">' + c.kicker + '</span>' +
+    '<div class="case-facts">' + c.facts.map(f =>
+      '<div><span>' + f[0] + '</span><p>' + f[1] + '</p></div>').join('') + '</div>' +
+    '<div class="case-shots">' + c.shots.map(s =>
+      '<img src="' + s + '" alt="" loading="lazy">').join('') + '</div>' +
+    c.sections.map(s => '<h3>' + s[0] + '</h3>' + s[1].join('')).join('');
+  inner.scrollTop = 0;
+  view.classList.add('open');
+  view.setAttribute('aria-hidden','false');
+}
+function closeCase(){
+  const view = document.getElementById('caseView');
+  if (!view) return false;
+  if (!view.classList.contains('open')) return false;
+  view.classList.remove('open');
+  view.setAttribute('aria-hidden','true');
+  return true;
+}
+document.addEventListener('click', e => {
+  const ent = e.target.closest('.entry.is-case');
+  if (ent) { AUDIO.ping(); openCase(ent.dataset.case); return; }
+  if (e.target.closest('.case-close')) { AUDIO.ping(); closeCase(); }
+});
+document.addEventListener('keydown', e => {
+  const ent = e.target.closest && e.target.closest('.entry.is-case');
+  if (ent && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); AUDIO.ping(); openCase(ent.dataset.case); }
+});
+
 function openPopup(scene){
   const pop = document.getElementById('pop-' + scene);
   const data = CONTENT[scene];
@@ -1097,9 +1431,12 @@ function openPopup(scene){
   pop.querySelector('.screen-inner').innerHTML =
     '<h2>' + data.heading + '</h2><span class="flavor">' + data.flavor + '</span>' + data.body;
   pop.classList.add('open');
+  stage.classList.add('popup-open');
 }
 function closeAllPopups(){
+  closeCase();
   document.querySelectorAll('.screen-popup.open').forEach(p => p.classList.remove('open'));
+  stage.classList.remove('popup-open');
 }
 document.addEventListener('click', e => {
   const x = e.target.closest('.popup-close');
@@ -1510,6 +1847,7 @@ function switchScene(target) {
     curX = curY = targetX = targetY = 0;
     currentScene = target;
     if (window.setBackdrop) setBackdrop(target);
+    buildMobileNav(target);
     backBtn.style.display = target === 'overview' ? 'none' : 'inline-flex';
     closeAllPopups();
     if (CONTENT[target]) setTimeout(() => openPopup(target), 120);
@@ -1561,6 +1899,7 @@ document.addEventListener('keydown', e => {
     e.preventDefault(); dismissStart(); return;
   }
   if (e.key === 'Escape') {
+    if (closeCase()) { AUDIO.ping(); return; }
     if (currentScene !== 'overview') { e.preventDefault(); AUDIO.ping(); switchScene(PARENT[currentScene] || 'overview'); }
   }
 });
@@ -1612,6 +1951,32 @@ document.addEventListener('click', e => {
   if (e.target.closest('.zone, .popup-close, .back-btn, .start-btn, .hotspot')) AUDIO.ping();
 }, true);
 
+/* ---------- portrait nav rail ---------- */
+const MOBILE_NAV = {
+  overview: [
+    { target:'computer',  label:'EXPERIENCE', sub:'Batcomputer' },
+    { target:'batmobile', label:'PAST WORK',  sub:'Batmobile Bay' },
+    { target:'armory',    label:'ABOUT ME',   sub:'Armory' },
+  ],
+  computer:  [{ target:'computer_zoom',  label:'OPEN FILE', sub:'The Batcomputer', primary:true }],
+  batmobile: [{ target:'batmobile_zoom', label:'OPEN FILE', sub:'The Cockpit',     primary:true }],
+  armory:    [{ target:'armory_zoom',    label:'OPEN FILE', sub:'The Suit',        primary:true }],
+};
+function buildMobileNav(scene){
+  const nav = document.getElementById('mobileNav');
+  if (!nav) return;
+  const items = MOBILE_NAV[scene] || [];
+  nav.innerHTML = '';
+  items.forEach(it => {
+    const b = document.createElement('button');
+    if (it.primary) b.className = 'primary';
+    b.innerHTML = it.label + '<span class="sub">' + it.sub + '</span>';
+    b.addEventListener('click', () => { AUDIO.ping(); switchScene(it.target); });
+    nav.appendChild(b);
+  });
+}
+buildMobileNav('overview');
+
 /* ---------- page backdrop: blurred scene bleed, bats and motes ---------- */
 (function(){
   const bg = document.getElementById('pageBg');
@@ -1657,12 +2022,21 @@ document.addEventListener('click', e => {
   };
 })();
 
+/* ---------- rotate hint dismisses on first interaction ---------- */
+(function(){
+  const hint = document.getElementById('rotateHint');
+  if (!hint) return;
+  const hide = () => { hint.style.display = 'none'; };
+  hint.addEventListener('click', hide);
+  document.addEventListener('touchstart', () => setTimeout(hide, 6000), { once:true, passive:true });
+})();
+
 /* ---------- animated cursor ---------- */
 document.addEventListener('DOMContentLoaded', function(){
   const bc = document.getElementById('batCursor');
   const frame = document.querySelector('.crt-frame');
   if (!bc || !frame || !window.matchMedia('(hover: hover)').matches) return;
-  const HOT = '.zone, .popup-close, .back-btn, .start-btn, .screen-inner a, [role="button"]';
+  const HOT = '.zone, .popup-close, .back-btn, .start-btn, .screen-inner a, .entry.is-case, .case-close, .mobile-nav button, [role="button"]';
   let tx=0, ty=0, cx=0, cy=0, raf=null;
   function loop(){
     cx += (tx-cx)*0.35; cy += (ty-cy)*0.35;      // slight easing so it feels weighted
