@@ -12,15 +12,17 @@ batcave-portfolio/
 ├── index-standalone.html   same site, everything embedded in one file
 └── assets/
     ├── images/
-    │   ├── overview.jpg        poster frame + title-screen backdrop
+    │   ├── overview.jpg        wide cave shot (landing scene) + title backdrop
     │   ├── computer.jpg        Batcomputer area
     │   ├── armory.jpg          Armory area
     │   ├── batmobile.jpg       Batmobile bay area
     │   ├── computer_zoom.jpg   monitor wall close-up
     │   ├── armory_zoom.jpg     suit corridor close-up
     │   └── batmobile_zoom.jpg  cockpit close-up
-    ├── video/
-    │   └── overview.mp4        animated cave (replaces the still on the landing scene)
+    ├── logos/                  company logo chips (128px square)
+    ├── work/                   two previews per entry, named <key>-1 / <key>-2
+    │                           experience tiles are real; the three project
+    │                           tiles are still generated placeholders
     ├── audio/
     │   ├── background.mp3      cave ambience (seamless 80s loop)
     │   ├── theme.mp3           title theme
@@ -57,6 +59,29 @@ Each entry takes HTML, so:
 Two links are still placeholders — search for `data-link="linkedin"` and drop in the real
 URLs.
 
+## Previews and case studies
+
+Each experience and project shows two images on hover (always visible on touch). They live in
+`assets/work/` and are named after the entry key:
+
+```
+specsavers-1.jpg   illuminate-1.jpg   orbit-1.jpg
+props-assist-1.jpg ai-tictactoe-1.jpg npo-connect-1.jpg
+howard-1.jpg                                           (and -2 for each)
+```
+
+Drop your own screenshots in at those filenames and nothing else needs to change. Tiles are
+16:10 (1200x750). Source images of any shape are normalised onto that tile by placing the
+image uncropped over a blurred, dimmed copy of itself, so portrait photos and wide slides sit
+side by side without distortion or lost content.
+
+A tile can be video instead of an image - see `orbit-2.mp4`, which uses a `<video>` with a
+poster frame and the same styling as the stills.
+
+The three projects also open a full case study. That copy is in the `CASE_STUDIES` object in
+`index.html` — each has a title, kicker, three facts, two shots and a list of sections. Add a
+new one by giving its entry `data-case="your-id"` and adding a matching key.
+
 ## Tuning the visuals
 
 | What | Where |
@@ -64,7 +89,6 @@ URLs.
 | Colours | CSS variables at the top of `<style>` (`--cyan`, `--marker`, `--amber`) |
 | Ambient FX | the `SCENE_FX` object — glows, scanlines, LEDs, bats, dust, per scene |
 | Page backdrop | the backdrop IIFE — blur amount, bat count, dust density |
-| Landing video | `assets/video/overview.mp4`; swap the file, keep the framing |
 | Area outlines | the `<svg class="zones">` block inside the overview scene |
 | Drill-in markers | the `<g class="zone">` groups inside each area scene |
 | Audio levels | the `LVL` object in the audio module |
@@ -79,13 +103,31 @@ scales *down* to fit a 1080p screen rather than up. Upscaling pixel art past 1:1
 it look soft and blocky; downscaling stays crisp. If you replace any artwork, run the same 2x
 nearest step first — a smooth (bicubic) upscale will undo the benefit.
 
+The landing scene is a still with the ambient FX layer over it — monitor flicker, scanlines,
+rack LEDs, the armory strip lights, the waterfall and splash, drifting bats and their red
+eyes. All of it is configured in `SCENE_FX.overview`.
+
 The scene is capped by `--stage-max` (top of the `<style>` block, default `1400px`) and
 centred, so on a 1080p desktop the art renders *below* its asset resolution instead of being
 stretched to fill. Raise it toward `1920px` for a bigger picture, lower it toward `1200px`
 for maximum crispness. Setting it to `100vw` restores full-bleed.
 
-The landing video is kept at its native 1920x1088. The parallax layer scales the scene by
+The parallax layer scales the scene by
 3.5%, chosen so the pan never exposes an edge while adding as little upscale as possible.
+
+## Mobile
+
+On a portrait phone the 16:9 scene sits as a band near the top and a stacked button rail
+appears underneath it — tapping a tiny outline on a 390px screen is unreliable, so the rail
+gives full-width targets instead. The rail is contextual: three sections on the overview, one
+"OPEN FILE" button inside an area, and nothing while a readout is open. Landscape and desktop
+use the outlines as before and never show the rail. Because the artwork uses
+`cover` and the SVG overlays use `slice`, the hotspots stay locked to the art at every size —
+nothing needs re-measuring per breakpoint.
+
+On touch devices the area labels are always visible (there is no hover to reveal them), tap
+targets are padded out, the readout panel goes near-fullscreen, the custom cursor is off, and
+the backdrop dust is dropped.
 
 ## Notes
 
@@ -94,8 +136,6 @@ The landing video is kept at its native 1920x1088. The parallax layer scales the
 - The custom cursor and all animation are disabled on touch devices and under
   `prefers-reduced-motion`.
 - Audio starts on the START press, since browsers block autoplay before a user gesture.
-- The landing scene plays a muted, looping video. It carries its own animation, so the
-  ambient FX layer is not applied there — the hover outlines and markers still are.
 
 ## Licensing
 
