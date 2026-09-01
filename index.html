@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Howard Huang — Portfolio</title>
+<meta name="theme-color" content="#04060a">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -21,6 +22,10 @@
     --font-body:'DM Mono', ui-monospace, monospace;
     --marker:#ffc233;
     --marker-soft:rgba(255,194,51,.55);
+    /* how far past fit-height the pannable art is blown up on portrait
+       phones. 1 = horizontal panning only; higher = vertical travel too,
+       at the cost of seeing less of the cave at once. */
+    --pan-zoom:1.22;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -183,141 +188,6 @@
   }
 
 
-  /* ================= TOUCH + SMALL SCREENS ================= */
-  html{ -webkit-text-size-adjust:100%; }
-  button, .zone{ touch-action:manipulation; }
-
-  /* no hover on touch, so the area names have to be visible by default */
-  @media (hover:none){
-    .zone-label{ opacity:.92; }
-    .zone .line{ stroke-opacity:.75; }
-    .zones:hover .zone:not(:hover) .line{ stroke-opacity:.75; }
-    /* fatter invisible tap targets */
-    .popup-close{ padding:10px; margin:-10px; }
-    .back-btn, .audio-btn{ padding:10px; margin:-10px; }
-  }
-
-  /* phones: the 16:9 stage becomes a band, so tighten everything around it */
-  @media (max-width: 900px){
-    :root{ --stage-max:100vw; }
-    .crt-frame{ border-radius:0; }
-    .corner{ width:12px; height:12px; }
-    .corner.tl,.corner.tr{ top:8px; }
-    .corner.bl,.corner.br{ bottom:8px; }
-    .corner.tl,.corner.bl{ left:8px; }
-    .corner.tr,.corner.br{ right:8px; }
-
-    .title-plate{ font-size:10px; letter-spacing:1.5px; top:10px; }
-    .area-eyebrow{ font-size:9px; letter-spacing:1.5px; top:10px; left:12px; padding:4px 7px; }
-    .back-btn{ font-size:9px; letter-spacing:1.5px; top:10px; right:12px; }
-    .audio-btn{ font-size:9px; letter-spacing:1.5px; left:30px; bottom:11px; }
-    .audio-btn .swap.b{ font-size:8px; letter-spacing:1px; }
-    .zone-label{ font-size:9px; letter-spacing:1.5px; }
-
-    /* the readout takes over the screen rather than floating in it */
-    .screen-popup{
-      width:94%; height:92%;
-      border-width:clamp(10px, 2.6vw, 18px);
-    }
-    .screen-inner{ padding:14px 15px 18px; }
-    .screen-inner h2{ font-size:15px; padding-right:64px; }
-    .screen-inner .flavor{ font-size:9.5px; }
-    .screen-inner h3{ font-size:11.5px; letter-spacing:.8px; }
-    .screen-inner .meta,
-    .screen-inner .tags{ font-size:11px; }
-    .screen-inner p{ font-size:11.5px; line-height:1.62; }
-    .screen-inner .entry{ padding-top:10px; margin-top:10px; }
-    .popup-close{ font-size:10px; top:10px; right:12px; }
-
-    .start-title{ font-size:clamp(26px,10vw,46px); letter-spacing:2px; }
-    .start-sub{ font-size:12px; padding:0 8px; }
-    .start-eyebrow, .start-hint{ font-size:9.5px; }
-    .start-btn{ font-size:12px; padding:13px 22px; }
-
-    /* trim the backdrop: cheaper, and less noise on a small screen */
-    .bg-dust{ display:none; }
-    .bg-grid{ opacity:.035; }
-  }
-
-  @media (max-width: 480px){
-    .screen-inner h2{ font-size:13px; }
-    .screen-inner h3{ font-size:10.5px; }
-    .screen-inner p, .screen-inner .meta, .screen-inner .tags{ font-size:10.5px; }
-  }
-
-  /* portrait phones: the scene is a thin band, so suggest turning the device */
-  .stage.popup-open .back-btn,
-  .stage.popup-open .audio-btn,
-  .stage.popup-open .area-eyebrow{
-    opacity:0; pointer-events:none; transition:opacity .2s;
-  }
-
-  .rotate-hint{
-    position:fixed; left:50%; bottom:calc(6vh + env(safe-area-inset-bottom));
-    transform:translateX(-50%); z-index:60;
-    display:none; align-items:center; gap:9px;
-    padding:9px 14px; border:1px solid var(--cyan-dim); border-radius:3px;
-    background:rgba(4,6,10,.88);
-    font-family:var(--font-display); font-weight:600; font-size:9px; letter-spacing:2px;
-    color:var(--cyan); white-space:nowrap;
-    animation:hintFade .4s ease both;
-  }
-  @keyframes hintFade{ from{ opacity:0; transform:translateX(-50%) translateY(8px); } }
-  .rotate-hint .phone{
-    width:9px; height:14px; border:1.5px solid currentColor; border-radius:2px; flex:none;
-    animation:tilt 2.2s ease-in-out infinite;
-  }
-  @keyframes tilt{ 0%,55%,100%{ transform:rotate(0); } 75%,90%{ transform:rotate(-90deg); } }
-  @media (max-width:900px) and (orientation:portrait){ .rotate-hint{ display:flex; } }
-
-
-  /* ---------- portrait phones: art band on top, real buttons underneath ---------- */
-  .mobile-nav{ display:none; }
-
-  @media (max-width:900px) and (orientation:portrait){
-    .crt-frame{
-      width:100vw; height:100vh; height:100dvh;
-      aspect-ratio:auto; max-height:none;
-    }
-    /* the scene keeps its 16:9 shape and sits in the upper part of the screen */
-    .scene{
-      inset:auto; left:0; right:0;
-      top:calc(env(safe-area-inset-top) + 46px);
-      height:auto; width:100%; aspect-ratio:16 / 9;
-    }
-    .mobile-nav{
-      position:absolute; left:0; right:0;
-      top:calc(env(safe-area-inset-top) + 46px + 56.25vw + 18px);
-      bottom:auto;
-      display:flex; flex-direction:column; gap:10px;
-      padding:0 18px; z-index:20;
-    }
-    .mobile-nav button{
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-      width:100%; min-height:52px; padding:14px 16px;
-      background:rgba(10,18,28,.85);
-      border:1px solid var(--cyan-dim); border-radius:3px;
-      color:var(--cyan);
-      font-family:var(--font-display); font-weight:700; font-size:12px; letter-spacing:2.5px;
-      text-align:left;
-    }
-    .mobile-nav button .sub{
-      font-family:var(--font-body); font-size:10px; letter-spacing:.5px;
-      color:rgba(150,214,209,.85); font-weight:400;
-    }
-    .mobile-nav button:active{ background:rgba(45,227,255,.16); border-color:var(--cyan); }
-    .mobile-nav button.primary{ border-color:var(--marker); color:var(--marker); }
-    .mobile-nav button.primary:active{ background:rgba(255,194,51,.16); }
-    .stage.popup-open .mobile-nav{ opacity:0; pointer-events:none; }
-
-    /* the readout now has the whole screen to work with */
-    .screen-popup{ width:94%; height:min(84%, 620px); }
-    .rotate-hint{ display:none; }
-
-    .back-btn{ top:calc(env(safe-area-inset-top) + 14px); right:16px; }
-    .audio-btn{ top:calc(env(safe-area-inset-top) + 14px); left:16px; bottom:auto; }
-    .corner{ display:none; }
-  }
 
 
   /* ---------- hover previews inside a readout ---------- */
@@ -739,7 +609,7 @@
     .dlg-reopen{ right:12px; bottom:12px; }
   }
   @media (max-width:900px) and (orientation:portrait){
-    #dialogue{ bottom:calc(env(safe-area-inset-bottom) + 12px); }
+    /* moved into the portrait block at the end of this stylesheet */
   }
 
   /* ---------- outer frame ---------- */
@@ -1388,6 +1258,300 @@
     .term-btn{min-width:110px; padding:10px;}
     .panel{width:88%;}
   }
+
+  /* =========================================================
+     TOUCH — kill sticky :hover
+     Phones fire :hover on tap and latch it until you tap somewhere
+     else, so hover-only states stay stuck on and any transitioned
+     property re-animates while you scroll. The `(hover:none)` query
+     is not enough on its own: plenty of Android browsers report
+     `hover:hover` on a touchscreen. `body.is-touch` is set from JS
+     off maxTouchPoints, which is reliable, and the extra class also
+     buys the specificity needed to beat the `:hover` rules above.
+     ========================================================= */
+  body.is-touch .entry .preview,
+  body.is-touch .entry:hover .preview,
+  body.is-touch .entry:focus-within .preview{
+    /* Collapsed on touch and completely deaf to :hover. Hover latches on
+       tap, so a hover-driven disclosure re-animates its height while you
+       scroll — that is the judder. A tap toggles .is-open instead. */
+    max-height:0; opacity:0; margin-top:0; transition:none;
+  }
+  body.is-touch .entry.is-open .preview{
+    max-height:none; opacity:1; margin-top:10px;
+  }
+  /* case entries open a full case study on tap, which shows the same
+     shots at a larger size — no disclosure needed here */
+  body.is-touch .entry.is-case .preview{ display:none; }
+
+  .preview-toggle{ display:none; }
+  body.is-touch .preview-toggle{
+    display:inline-block; margin:8px 0 0 16px; padding:6px 0;
+    background:none; border:none;
+    font-family:var(--font-display); font-weight:700; font-size:10px;
+    letter-spacing:2px; color:var(--cyan); opacity:.8;
+  }
+  body.is-touch .entry:hover h3 .logo{
+    border-color:rgba(125,236,255,.3); box-shadow:none;
+  }
+  body.is-touch .entry.is-case:hover h3{ color:#e9fbff; }
+  body.is-touch .entry.is-case:hover .cta{ opacity:.75; transform:none; }
+  body.is-touch .screen-inner a:hover{ background:none; }
+
+  /* a latched hover here would freeze the skill marquee for good */
+  body.is-touch .belt:hover .belt-track{ animation-play-state:running; }
+  body.is-touch .chip:hover{ transform:none; box-shadow:none; }
+  body.is-touch .chip:hover .dot{ transform:none; box-shadow:none; }
+  body.is-touch .chip.cert:hover .seal{ transform:none; box-shadow:none; }
+
+  /* stop the scroll from chaining out to the page behind the readout */
+  body.is-touch .screen-inner,
+  body.is-touch .case-inner{
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+  }
+
+
+     Do not move these above the base .crt-frame / .scene rules.
+     ========================================================= */
+  /* ================= TOUCH + SMALL SCREENS ================= */
+  html{ -webkit-text-size-adjust:100%; }
+  button, .zone{ touch-action:manipulation; }
+
+  /* no hover on touch, so the area names have to be visible by default */
+  @media (hover:none){
+    .zone-label{ opacity:.92; }
+    .zone .line{ stroke-opacity:.75; }
+    .zones:hover .zone:not(:hover) .line{ stroke-opacity:.75; }
+    /* fatter invisible tap targets */
+    .popup-close{ padding:10px; margin:-10px; }
+    .back-btn, .audio-btn{ padding:10px; margin:-10px; }
+  }
+
+  /* phones: the 16:9 stage becomes a band, so tighten everything around it */
+  @media (max-width: 900px){
+    :root{ --stage-max:100vw; }
+    .crt-frame{ border-radius:0; }
+    .corner{ width:12px; height:12px; }
+    .corner.tl,.corner.tr{ top:8px; }
+    .corner.bl,.corner.br{ bottom:8px; }
+    .corner.tl,.corner.bl{ left:8px; }
+    .corner.tr,.corner.br{ right:8px; }
+
+    .title-plate{ font-size:10px; letter-spacing:1.5px; top:10px; }
+    .area-eyebrow{ font-size:9px; letter-spacing:1.5px; top:10px; left:12px; padding:4px 7px; }
+    .back-btn{ font-size:9px; letter-spacing:1.5px; top:10px; right:12px; }
+    .audio-btn{ font-size:9px; letter-spacing:1.5px; left:30px; bottom:11px; }
+    .audio-btn .swap.b{ font-size:8px; letter-spacing:1px; }
+    .zone-label{ font-size:9px; letter-spacing:1.5px; }
+
+    /* the readout takes over the screen rather than floating in it */
+    .screen-popup{
+      width:94%; height:92%;
+      border-width:clamp(10px, 2.6vw, 18px);
+    }
+    .screen-inner{ padding:14px 15px 18px; }
+    .screen-inner h2{ font-size:15px; padding-right:64px; }
+    .screen-inner .flavor{ font-size:9.5px; }
+    .screen-inner h3{ font-size:11.5px; letter-spacing:.8px; }
+    .screen-inner .meta,
+    .screen-inner .tags{ font-size:11px; }
+    .screen-inner p{ font-size:11.5px; line-height:1.62; }
+    .screen-inner .entry{ padding-top:10px; margin-top:10px; }
+    .popup-close{ font-size:10px; top:10px; right:12px; }
+
+    .start-title{ font-size:clamp(26px,10vw,46px); letter-spacing:2px; }
+    .start-sub{ font-size:12px; padding:0 8px; }
+    .start-eyebrow, .start-hint{ font-size:9.5px; }
+    .start-btn{ font-size:12px; padding:13px 22px; }
+
+    /* trim the backdrop: cheaper, and less noise on a small screen */
+    .bg-dust{ display:none; }
+    .bg-grid{ opacity:.035; }
+  }
+
+  @media (max-width: 480px){
+    .screen-inner h2{ font-size:13px; }
+    .screen-inner h3{ font-size:10.5px; }
+    .screen-inner p, .screen-inner .meta, .screen-inner .tags{ font-size:10.5px; }
+  }
+
+  /* portrait phones: the scene is a thin band, so suggest turning the device */
+  .stage.popup-open .back-btn,
+  .stage.popup-open .audio-btn,
+  .stage.popup-open .area-eyebrow{
+    opacity:0; pointer-events:none; transition:opacity .2s;
+  }
+
+  .rotate-hint{
+    position:fixed; left:50%; bottom:calc(6vh + env(safe-area-inset-bottom));
+    transform:translateX(-50%); z-index:60;
+    display:none; align-items:center; gap:9px;
+    padding:9px 14px; border:1px solid var(--cyan-dim); border-radius:3px;
+    background:rgba(4,6,10,.88);
+    font-family:var(--font-display); font-weight:600; font-size:9px; letter-spacing:2px;
+    color:var(--cyan); white-space:nowrap;
+    animation:hintFade .4s ease both;
+  }
+  @keyframes hintFade{ from{ opacity:0; transform:translateX(-50%) translateY(8px); } }
+  .rotate-hint .phone{
+    width:9px; height:14px; border:1.5px solid currentColor; border-radius:2px; flex:none;
+    animation:tilt 2.2s ease-in-out infinite;
+  }
+  @keyframes tilt{ 0%,55%,100%{ transform:rotate(0); } 75%,90%{ transform:rotate(-90deg); } }
+  @media (max-width:900px) and (orientation:portrait){ .rotate-hint{ display:flex; } }
+
+
+  /* ---------- portrait phones: side drawer for sections, stick to pan ---------- */
+  .mobile-nav{ display:none; }
+  .nav-toggle{ display:none; }
+  .nav-scrim{ display:none; }
+  .joypad{ display:none; }
+
+  @media (max-width:900px) and (orientation:portrait){
+    .crt-frame{
+      width:100vw; height:100vh; height:100dvh;
+      aspect-ratio:auto; max-height:none;
+    }
+    /* the art fills the whole screen and crops to centre */
+    .scene{
+      inset:0;
+      top:0; left:0; right:0; bottom:0;
+      width:auto; height:auto; aspect-ratio:auto;
+    }
+    /* to dial the crop back, comment the block above and use this instead:
+       .scene{ inset:auto; left:0; right:0; top:0; height:70vh; width:100%; aspect-ratio:auto; } */
+
+    /* the sections live in a drawer off the left edge, so the art is
+       clear until you ask for the menu */
+    .nav-toggle{
+      display:flex; align-items:center; gap:9px;
+      position:absolute; z-index:28;
+      left:16px; bottom:calc(env(safe-area-inset-bottom) + 16px);
+      padding:12px 15px; min-height:46px;
+      background:rgba(10,18,28,.88);
+      border:1px solid var(--cyan-dim); border-radius:3px;
+      color:var(--cyan);
+      font-family:var(--font-display); font-weight:700; font-size:11px; letter-spacing:2.5px;
+      backdrop-filter:blur(3px);
+      transition:opacity .2s ease;
+    }
+    .nav-toggle .bars{ display:grid; gap:3px; width:14px; }
+    .nav-toggle .bars i{ display:block; height:2px; background:currentColor; }
+
+    .nav-scrim{
+      display:block; position:absolute; inset:0; z-index:29;
+      background:rgba(2,4,8,.58);
+      opacity:0; pointer-events:none; transition:opacity .28s ease;
+    }
+    .nav-scrim.open{ opacity:1; pointer-events:auto; }
+
+    .mobile-nav{
+      position:absolute; z-index:30;
+      left:0; top:0; bottom:0; right:auto;
+      width:min(82%, 306px);
+      display:flex; flex-direction:column; gap:10px;
+      padding:calc(env(safe-area-inset-top) + 18px) 16px
+              calc(env(safe-area-inset-bottom) + 22px);
+      background:linear-gradient(90deg, rgba(4,8,14,.97) 76%, rgba(4,8,14,.88));
+      border-right:1px solid var(--cyan-dim);
+      transform:translateX(-101%);
+      transition:transform .3s cubic-bezier(.2,.7,.3,1);
+      overflow-y:auto; overscroll-behavior:contain;
+    }
+    .mobile-nav.open{ transform:none; }
+
+    .nav-head{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 2px 12px; margin-bottom:4px;
+      border-bottom:1px solid rgba(125,236,255,.16);
+      font-family:var(--font-display); font-weight:700; font-size:10px;
+      letter-spacing:2.5px; color:var(--cyan-dim);
+    }
+    .nav-close{
+      background:none; border:none; color:var(--cyan);
+      font-size:15px; line-height:1; padding:6px 8px; margin:-6px -8px -6px 0;
+    }
+    .nav-list{ display:flex; flex-direction:column; gap:10px; }
+
+    .mobile-nav button:not(.nav-close){
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      width:100%; min-height:52px; padding:14px 16px;
+      background:rgba(10,18,28,.92);
+      border:1px solid var(--cyan-dim); border-radius:3px;
+      color:var(--cyan);
+      font-family:var(--font-display); font-weight:700; font-size:12px; letter-spacing:2.5px;
+      text-align:left;
+    }
+
+    .stage.popup-open .nav-toggle{ opacity:0; pointer-events:none; }
+    .mobile-nav button .sub{
+      font-family:var(--font-body); font-size:10px; letter-spacing:.5px;
+      color:rgba(150,214,209,.85); font-weight:400;
+    }
+    .mobile-nav button:not(.nav-close):active{ background:rgba(45,227,255,.16); border-color:var(--cyan); }
+    .mobile-nav button.primary{ border-color:var(--marker); color:var(--marker); }
+    .mobile-nav button.primary:active{ background:rgba(255,194,51,.16); }
+    .stage.popup-open .mobile-nav{ opacity:0; pointer-events:none; }
+
+    /* the readout now has the whole screen to work with */
+    .screen-popup{ width:94%; height:min(84%, 620px); }
+    .rotate-hint{ display:none; }
+
+    /* top strip: audio left and back right on row one, the area label
+       on its own row underneath, so nothing overlaps on a narrow screen */
+    .back-btn{ top:calc(env(safe-area-inset-top) + 14px); right:16px; max-width:44vw; }
+    .audio-btn{ top:calc(env(safe-area-inset-top) + 14px); left:16px; bottom:auto; }
+    .area-eyebrow{
+      top:calc(env(safe-area-inset-top) + 40px); left:16px; right:16px;
+      width:max-content; max-width:calc(100% - 32px);
+    }
+    #dialogue{ top:calc(env(safe-area-inset-top) + 78px); bottom:auto; }
+    .corner{ display:none; }
+
+    /* the art layer is widened to the full 16:9 frame, then panned across.
+       art and hotspots share this box, so they can never drift apart.
+       --pan-zoom > 1 oversizes it on BOTH axes so there is something to
+       reveal vertically too. Set it to 1 for horizontal-only panning. */
+    .parallax{
+      left:50%; right:auto; top:50%; bottom:auto;
+      width:var(--pan-w, 100%);
+      height:var(--pan-h, 100%);
+      margin-left:calc(var(--pan-w, 100%) / -2);
+      margin-top:calc(var(--pan-h, 100%) / -2);
+    }
+
+    .joypad{
+      display:block; position:absolute;
+      right:14px; top:calc(50% - 46px);
+      width:92px; height:92px; z-index:26;
+      border-radius:50%;
+      border:1px solid var(--cyan-dim);
+      background:radial-gradient(circle at 50% 50%, rgba(11,20,32,.62), rgba(4,6,10,.84));
+      backdrop-filter:blur(3px);
+      touch-action:none;
+      opacity:.82;
+      transition:opacity .2s ease;
+    }
+    .joypad .ring{
+      position:absolute; inset:11px; border-radius:50%;
+      border:1px dashed rgba(45,227,255,.22);
+    }
+    .joypad .knob{
+      position:absolute; left:50%; top:50%;
+      width:36px; height:36px; margin:-18px 0 0 -18px;
+      border-radius:50%;
+      background:var(--cyan); opacity:.62;
+      box-shadow:0 0 16px rgba(45,227,255,.5);
+      transition:transform .22s cubic-bezier(.2,.8,.3,1), opacity .2s;
+    }
+    .joypad.active{ opacity:1; }
+    .joypad.active .knob{ transition:none; opacity:.95; }
+    /* nothing to pan on this scene, or the readout is up */
+    .joypad.idle{ display:none; }
+    .stage.popup-open .joypad{ opacity:0; pointer-events:none; }
+  }
+
 </style>
 </head>
 <body>
@@ -1408,7 +1572,24 @@
   <div class="stage" id="stage">
 
     <button class="back-btn" id="backBtn">BACK →</button>
-    <nav class="mobile-nav" id="mobileNav" aria-label="Sections"></nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu"
+            aria-expanded="false" aria-controls="mobileNav">
+      <span class="bars"><i></i><i></i><i></i></span>
+      <span class="lbl">MENU</span>
+    </button>
+    <div class="nav-scrim" id="navScrim"></div>
+    <nav class="mobile-nav" id="mobileNav" aria-label="Sections" aria-hidden="true">
+      <div class="nav-head">
+        <span>NAVIGATION</span>
+        <button class="nav-close" id="navClose" aria-label="Close menu">&#10005;</button>
+      </div>
+      <div class="nav-list" id="mobileNavList"></div>
+    </nav>
+
+    <div class="joypad" id="joypad" aria-label="Pan the view" role="application">
+      <span class="ring"></span>
+      <span class="knob"></span>
+    </div>
 
     <button class="audio-btn" id="audioBtn" aria-label="Toggle sound">
       <span class="bars"><i></i><i></i><i></i><i></i></span><span class="label"><span class="sizer">BAT CAVE — DANNY ELFMAN</span><span class="swap a">AUDIO</span><span class="swap b">BAT CAVE — DANNY ELFMAN</span></span>
@@ -1549,10 +1730,10 @@
       <div class="dlg-text" id="dlgText"></div>
       <div class="dlg-foot">
         <span class="dlg-hint">click to continue</span>
-        <button class="dlg-next" id="dlgNext">NEXT \u25b8</button>
+        <button class="dlg-next" id="dlgNext">NEXT ▸</button>
       </div>
     </div>
-    <button class="dlg-reopen" id="dlgReopen" aria-label="Show hints">\u25b8 HINTS</button>
+    <button class="dlg-reopen" id="dlgReopen" aria-label="Show hints">▸ HINTS</button>
 
     <div id="fadeOverlay" aria-hidden="true"></div>
 
@@ -1674,7 +1855,7 @@ const CASE_STUDIES = {
       ['Responsibilities','Team lead of five \u00b7 architecture'],
       ['Tools','Figma \u00b7 Figjam \u00b7 Photoshop CS6'],
     ],
-    shots: ['assets/work/spotify.jpg','assets/work/spotify2.jpg'],
+    shots: ['assets/work/spotify1.jpg','assets/work/spotify2.jpg'],
     sections: [
       { tag:'Background', title:'A solved game as a testbed', body:[
         '<p>Because Minimax plays perfectly, anything the language model loses is a difference in reasoning rather than noise. That made the comparison worth building.</p>']},
@@ -1859,8 +2040,36 @@ function openPopup(scene){
   pop.querySelector('.screen-inner').innerHTML =
     '<h2>' + data.heading + '</h2><span class="flavor">' + data.flavor + '</span>' + data.body;
   buildBelts();
+  if (document.body.classList.contains('is-touch')) addPreviewToggles(pop);
   pop.classList.add('open');
   stage.classList.add('popup-open');
+}
+
+/* On touch, previews are collapsed and get an explicit toggle. The images
+   are loading="lazy", so an always-open preview shows a tall empty box
+   until it scrolls into view — and hover-to-open glitches while scrolling. */
+function addPreviewToggles(pop){
+  pop.querySelectorAll('.entry:not(.is-case)').forEach(entry => {
+    const preview = entry.querySelector('.preview');
+    if (!preview || entry.querySelector('.preview-toggle')) return;
+    const n = preview.children.length;
+    const btn = document.createElement('button');
+    btn.className = 'preview-toggle';
+    btn.type = 'button';
+    btn.textContent = '+ SHOW ' + n + (n === 1 ? ' IMAGE' : ' IMAGES');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.addEventListener('click', () => {
+      const open = entry.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn.textContent = (open ? '\u2212 HIDE ' : '+ SHOW ') + n + (n === 1 ? ' IMAGE' : ' IMAGES');
+      if (open) {
+        // lazy images inside a collapsed box never start loading
+        preview.querySelectorAll('img[loading="lazy"]').forEach(i => i.loading = 'eager');
+      }
+      AUDIO.ping();
+    });
+    preview.insertAdjacentElement('beforebegin', btn);
+  });
 }
 function closeAllPopups(){
   closeCase();
@@ -2297,8 +2506,32 @@ const PARENT = {
 let currentScene = 'overview';
 const REDUCE_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* Touch detection that does not rely on the hover media query, which
+   several Android browsers report as `hover:hover` on a touchscreen.
+   Drives the sticky-hover overrides at the end of the stylesheet. */
+(function(){
+  const touch = (navigator.maxTouchPoints || 0) > 0
+             || 'ontouchstart' in window
+             || window.matchMedia('(pointer:coarse)').matches;
+  document.body.classList.toggle('is-touch', touch);
+  // a hybrid laptop may not touch first; latch it on the first real touch
+  if (!touch) {
+    window.addEventListener('touchstart',
+      () => document.body.classList.add('is-touch'),
+      { once:true, passive:true });
+  }
+})();
+
 /* ---------- parallax panning on mouse move ---------- */
 let rafId = null, targetX = 0, targetY = 0, curX = 0, curY = 0;
+
+/* portrait pan state, driven by the thumb stick (see below) */
+let panPos = 0.5;    // 0 = hard left of the art, 1 = hard right
+let panPosY = 0.5;   // 0 = top of the art, 1 = bottom
+let panRange = 0;    // px of horizontal travel; 0 means nothing to pan
+let panRangeY = 0;   // px of vertical travel
+let stickX = 0;      // -1 .. 1, how far the stick is pushed
+let stickY = 0;
 
 function onPointerMove(e) {
   const rect = stage.getBoundingClientRect();
@@ -2313,15 +2546,30 @@ function tick() {
   curX += (targetX - curX) * 0.08;
   curY += (targetY - curY) * 0.08;
 
+  // integrate the stick into a position, so holding it keeps the view moving
+  if (stickX !== 0 && panRange > 0) {
+    panPos = Math.min(1, Math.max(0, panPos + stickX * 0.014));
+  }
+  if (stickY !== 0 && panRangeY > 0) {
+    panPosY = Math.min(1, Math.max(0, panPosY + stickY * 0.014));
+  }
+
   const active = stage.querySelector('.scene.active .parallax');
   if (active) {
     const depth = parseFloat(active.dataset.depth) || 12;
+    const panning = panRange > 0 || panRangeY > 0;
+    // no extra scale in pan mode: the box is already sized to the art
+    const sc = panning ? 1 : 1.035;
+    const panPx = panRange  > 0 ? (0.5 - panPos)  * panRange  : 0;
+    const panPy = panRangeY > 0 ? (0.5 - panPosY) * panRangeY : 0;
     // negative = art drifts opposite the cursor, which reads as looking around
     active.style.transform =
-      'scale(1.035) translate3d(' + (-curX * depth) + 'px,' + (-curY * depth * 0.6) + 'px,0)';
+      'scale(' + sc + ') translate3d(' + (panPx - curX * depth) + 'px,' +
+      (panPy - curY * depth * 0.6) + 'px,0)';
   }
 
-  if (Math.abs(targetX - curX) > 0.001 || Math.abs(targetY - curY) > 0.001) {
+  if (stickX !== 0 || stickY !== 0 ||
+      Math.abs(targetX - curX) > 0.001 || Math.abs(targetY - curY) > 0.001) {
     rafId = requestAnimationFrame(tick);
   } else {
     rafId = null;
@@ -2338,6 +2586,84 @@ if (!REDUCE_MOTION && window.matchMedia('(hover: hover)').matches) {
   stage.addEventListener('mouseleave', resetParallax);
 }
 
+/* ---------- thumb stick: pan the widened art on portrait phones ---------- */
+(function(){
+  const pad = document.getElementById('joypad');
+  if (!pad) return;
+  const knob = pad.querySelector('.knob');
+  const mq = window.matchMedia('(max-width:900px) and (orientation:portrait)');
+  const MAX = 26;   // how far the knob travels from centre, px
+
+  function measure(){
+    if (!mq.matches) {
+      panRange = panRangeY = 0;
+      document.documentElement.style.removeProperty('--pan-w');
+      document.documentElement.style.removeProperty('--pan-h');
+      pad.classList.add('idle');
+      if (!rafId) rafId = requestAnimationFrame(tick);
+      return;
+    }
+    const r = stage.getBoundingClientRect();
+    const zoom = parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue('--pan-zoom')
+    ) || 1;
+    // the size this scene needs for the whole 16:9 frame, then blown up
+    // by --pan-zoom so there is vertical overflow to travel through too
+    const wide = r.height * 16 / 9 * zoom;
+    const tall = r.height * zoom;
+    panRange  = Math.max(0, wide - r.width);
+    panRangeY = Math.max(0, tall - r.height);
+    document.documentElement.style.setProperty('--pan-w', wide + 'px');
+    document.documentElement.style.setProperty('--pan-h', tall + 'px');
+    pad.classList.toggle('idle', panRange < 24 && panRangeY < 24);
+    if (!rafId) rafId = requestAnimationFrame(tick);
+  }
+
+  function setStick(dx, dy){
+    const nx = Math.max(-1, Math.min(1, dx / MAX));
+    const ny = Math.max(-1, Math.min(1, dy / MAX));
+    // dead zone on the magnitude, so a resting thumb doesn't drift the view
+    const mag = Math.hypot(nx, ny);
+    if (mag < 0.16) { stickX = stickY = 0; }
+    else { stickX = nx; stickY = ny; }
+    knob.style.transform = 'translate(' + (nx * MAX) + 'px,' + (ny * MAX) + 'px)';
+    if ((stickX !== 0 || stickY !== 0) && !rafId) rafId = requestAnimationFrame(tick);
+  }
+
+  function release(){
+    stickX = stickY = 0;
+    pad.classList.remove('active');
+    knob.style.transform = '';
+  }
+
+  let originX = 0, originY = 0;
+  pad.addEventListener('pointerdown', e => {
+    pad.setPointerCapture(e.pointerId);
+    pad.classList.add('active');
+    const b = pad.getBoundingClientRect();
+    originX = b.left + b.width / 2;
+    originY = b.top + b.height / 2;
+    setStick(e.clientX - originX, e.clientY - originY);
+    e.preventDefault();
+  });
+  pad.addEventListener('pointermove', e => {
+    if (!pad.classList.contains('active')) return;
+    setStick(e.clientX - originX, e.clientY - originY);
+    e.preventDefault();
+  });
+  pad.addEventListener('pointerup', release);
+  pad.addEventListener('pointercancel', release);
+  pad.addEventListener('lostpointercapture', release);
+
+  window.addEventListener('resize', measure);
+  window.addEventListener('orientationchange', () => setTimeout(measure, 120));
+  if (mq.addEventListener) mq.addEventListener('change', measure);
+  measure();
+
+  // re-measure when the scene changes; the zoom scenes have their own art
+  window.__panMeasure = measure;
+})();
+
 /* ---------- fade-to-black scene transition ---------- */
 function switchScene(target) {
   const current = stage.querySelector('.scene.active');
@@ -2353,16 +2679,24 @@ function switchScene(target) {
     if (oldPx) oldPx.style.transform = 'scale(1.035)';
     next.classList.add('active');
     curX = curY = targetX = targetY = 0;
+    panPos = 0.5; panPosY = 0.5; stickX = stickY = 0;
+    if (window.__panMeasure) window.__panMeasure();
     currentScene = target;
     if (window.setBackdrop) setBackdrop(target);
     buildMobileNav(target);
+    if (window.__navSetOpen) window.__navSetOpen(false);
     setTimeout(() => DLG.show(target), 260);
     backBtn.style.display = target === 'overview' ? 'none' : 'inline-flex';
     closeAllPopups();
     if (CONTENT[target]) setTimeout(() => openPopup(target), 120);
-    backBtn.textContent = (PARENT[target] === 'overview'
-      ? 'RETURN TO OVERVIEW'
-      : 'BACK TO ' + AREA_TITLES[PARENT[target]]) + '  [ESC]';
+    // the long label plus [ESC] does not fit next to the area name on a
+    // phone, and there is no Esc key to press there anyway
+    const narrow = window.matchMedia('(max-width:900px)').matches;
+    backBtn.textContent = narrow
+      ? '\u25c0 BACK'
+      : (PARENT[target] === 'overview'
+          ? 'RETURN TO OVERVIEW'
+          : 'BACK TO ' + AREA_TITLES[PARENT[target]]) + '  [ESC]';
   };
 
   if (REDUCE_MOTION) { doSwap(); return; }
@@ -2547,7 +2881,7 @@ const MOBILE_NAV = {
   armory:    [{ target:'armory_zoom',    label:'OPEN FILE', sub:'The Suit',        primary:true }],
 };
 function buildMobileNav(scene){
-  const nav = document.getElementById('mobileNav');
+  const nav = document.getElementById('mobileNavList');
   if (!nav) return;
   const items = MOBILE_NAV[scene] || [];
   nav.innerHTML = '';
@@ -2555,11 +2889,46 @@ function buildMobileNav(scene){
     const b = document.createElement('button');
     if (it.primary) b.className = 'primary';
     b.innerHTML = it.label + '<span class="sub">' + it.sub + '</span>';
-    b.addEventListener('click', () => { AUDIO.ping(); switchScene(it.target); });
+    b.addEventListener('click', () => {
+      AUDIO.ping();
+      if (window.__navSetOpen) window.__navSetOpen(false);
+      switchScene(it.target);
+    });
     nav.appendChild(b);
   });
 }
 buildMobileNav('overview');
+
+/* ---------- section drawer ---------- */
+(function(){
+  const nav    = document.getElementById('mobileNav');
+  const toggle = document.getElementById('navToggle');
+  const scrim  = document.getElementById('navScrim');
+  const close  = document.getElementById('navClose');
+  if (!nav || !toggle || !scrim) return;
+
+  function setOpen(open){
+    nav.classList.toggle('open', open);
+    scrim.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    nav.setAttribute('aria-hidden', open ? 'false' : 'true');
+  }
+  window.__navSetOpen = setOpen;
+
+  toggle.addEventListener('click', () => {
+    AUDIO.ping();
+    setOpen(!nav.classList.contains('open'));
+  });
+  scrim.addEventListener('click', () => setOpen(false));
+  if (close) close.addEventListener('click', () => { AUDIO.ping(); setOpen(false); });
+  // Esc closes the drawer before it reaches the scene-back handler
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && nav.classList.contains('open')) {
+      e.stopPropagation();
+      setOpen(false);
+    }
+  }, true);
+})();
 
 /* ---------- page backdrop: blurred scene bleed, bats and motes ---------- */
 (function(){
