@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Howard Huang — Portfolio</title>
 <meta name="theme-color" content="#04060a">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/ui/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/ui/favicon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -2762,7 +2764,7 @@ const AUDIO = (function(){
   if (!cave || !theme || !click || !btn) {
     return { start(){}, ping(){}, tick(){} };  // no audio present - stay silent, don't throw
   }
-  const LVL = { cave: 0.62, theme: 0.13, click: 0.45, type: 0.085 };   // ambience leads, theme sits under it
+  const LVL = { cave: 0.62, theme: 0.21, click: 0.26, type: 0.15 };   // ambience leads, theme sits under it
   let on = true, started = false, ctx = null, noiseBuf = null, lastTick = 0;
 
   function fade(el, to, ms){
