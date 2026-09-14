@@ -1312,6 +1312,8 @@
   }
 
 
+  /* =========================================================
+     MOBILE OVERRIDES — kept last so they win the cascade.
      Do not move these above the base .crt-frame / .scene rules.
      ========================================================= */
   /* ================= TOUCH + SMALL SCREENS ================= */
@@ -1777,7 +1779,7 @@ const CONTENT = {
   batmobile_zoom: {
     heading: 'Past Work',
     flavor: 'Case files \u2014 Batmobile \u00b7 tap a project for the case study',
-    body: `<div class="entry is-wip"><h3>Props Assist<span class="wip-badge">IN PROGRESS</span></h3><p>Full-stack tool ingesting live NBA odds and player data to surface real-time +EV projections across DraftKings, FanDuel and Caesars.</p><div class="taglist"><span>Python</span><span>JavaScript</span><span>HTML/CSS</span><span>SportsGamesOdds API</span></div><div class="preview"><img src="assets/work/props-assist-1.jpg" alt="" loading="lazy"><img src="assets/work/props-assist-2.jpg" alt="" loading="lazy"></div><span class="wip-note">Case study coming soon!</span></div><div class="entry is-wip"><h3>Spotify Userflow Redesign<span class="wip-badge">IN PROGRESS</span></h3><p>Rebuilding the signup flow - where a new listener goes from landing on the app to a first play worth staying for.</p><div class="taglist"><span>Figma</span><span>Userflow</span><span>Photoshop CS6</span><span>Wireframing</span></div><div class="preview"><video src="assets/work/spotify-flow.mp4" poster="assets/work/spotify-flow.mp4" autoplay muted loop playsinline preload="metadata"></video><img src="assets/work/spotify-cover.jpg" alt="" loading="lazy"></div><span class="wip-note">Case study coming soon!</span></div><div class="entry is-case" data-case="npo-connect" tabindex="0" role="button"><h3>NPO Connect Interface</h3><p>Interface design for a nonprofit collaboration platform, from user research through wireframes to a high-fidelity prototype.</p><div class="taglist"><span>Figma</span><span>Adobe Photoshop CS6</span></div><div class="preview"><img src="assets/work/npo-connect-cover.jpg" alt="" loading="lazy"><video src="assets/work/npo-connect-flow.mp4" poster="assets/work/npo-connect-flow.mp4" autoplay muted loop playsinline preload="metadata"></video></div><span class="cta">VIEW CASE STUDY \u2192</span></div>`
+    body: `<div class="entry is-wip"><h3>Props Assist<span class="wip-badge">IN PROGRESS</span></h3><p>Full-stack tool ingesting live NBA odds and player data to surface real-time +EV projections across DraftKings, FanDuel and Caesars.</p><div class="taglist"><span>Python</span><span>JavaScript</span><span>HTML/CSS</span><span>SportsGamesOdds API</span></div><div class="preview"><img src="assets/work/props-assist-1.jpg" alt="" loading="lazy"><img src="assets/work/props-assist-2.jpg" alt="" loading="lazy"></div><span class="wip-note">Case study coming soon!</span></div><div class="entry is-wip"><h3>Spotify Userflow Redesign<span class="wip-badge">IN PROGRESS</span></h3><p>Rebuilding the signup flow - where a new listener goes from landing on the app to a first play worth staying for.</p><div class="taglist"><span>Figma</span><span>Userflow</span><span>Photoshop CS6</span><span>Wireframing</span></div><div class="preview"><video src="assets/work/spotify-flow.mp4" poster="assets/work/spotify-flow.jpg" autoplay muted loop playsinline preload="metadata"></video><img src="assets/work/spotify-cover.jpg" alt="" loading="lazy"></div><span class="wip-note">Case study coming soon!</span></div><div class="entry is-case" data-case="npo-connect" tabindex="0" role="button"><h3>NPO Connect Interface</h3><p>Interface design for a nonprofit collaboration platform, from user research through wireframes to a high-fidelity prototype.</p><div class="taglist"><span>Figma</span><span>Adobe Photoshop CS6</span></div><div class="preview"><img src="assets/work/npo-connect-cover.jpg" alt="" loading="lazy"><video src="assets/work/npo-connect-flow.mp4" poster="assets/work/npo-connect-flow.jpg" autoplay muted loop playsinline preload="metadata"></video></div><span class="cta">VIEW CASE STUDY \u2192</span></div>`
   },
 
   armory_zoom: {
@@ -1855,7 +1857,7 @@ const CASE_STUDIES = {
       ['Responsibilities','Team lead of five \u00b7 architecture'],
       ['Tools','Figma \u00b7 Figjam \u00b7 Photoshop CS6'],
     ],
-    shots: ['assets/work/spotify-flow.mp4','assets/work/spotify-cover.jpg','assets/work/spotify1.jpg','assets/work/spotify2.jpg'],
+    shots: ['assets/work/spotify-flow.jpg','assets/work/spotify-cover.jpg','assets/work/spotify1.jpg','assets/work/spotify2.jpg'],
     sections: [
       { tag:'Background', title:'A solved game as a testbed', body:[
         '<p>Because Minimax plays perfectly, anything the language model loses is a difference in reasoning rather than noise. That made the comparison worth building.</p>']},
@@ -2053,18 +2055,22 @@ function addPreviewToggles(pop){
     const preview = entry.querySelector('.preview');
     if (!preview || entry.querySelector('.preview-toggle')) return;
     const n = preview.children.length;
+    const hasVideo = !!preview.querySelector('video');
+    const noun = hasVideo ? (n === 1 ? ' CLIP' : ' ITEMS') : (n === 1 ? ' IMAGE' : ' IMAGES');
     const btn = document.createElement('button');
     btn.className = 'preview-toggle';
     btn.type = 'button';
-    btn.textContent = '+ SHOW ' + n + (n === 1 ? ' IMAGE' : ' IMAGES');
+    btn.textContent = '+ SHOW ' + n + noun;
     btn.setAttribute('aria-expanded', 'false');
     btn.addEventListener('click', () => {
       const open = entry.classList.toggle('is-open');
       btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      btn.textContent = (open ? '\u2212 HIDE ' : '+ SHOW ') + n + (n === 1 ? ' IMAGE' : ' IMAGES');
+      btn.textContent = (open ? '\u2212 HIDE ' : '+ SHOW ') + n + noun;
       if (open) {
         // lazy images inside a collapsed box never start loading
         preview.querySelectorAll('img[loading="lazy"]').forEach(i => i.loading = 'eager');
+        // a video in a collapsed box may have been paused by the browser
+        preview.querySelectorAll('video').forEach(v => v.play().catch(()=>{}));
       }
       AUDIO.ping();
     });
