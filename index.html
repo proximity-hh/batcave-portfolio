@@ -1739,8 +1739,8 @@
 
 
     <div class="start-screen" id="startScreen">
-      <div class="start-eyebrow">PORTFOLIO</div>
-      <h1 class="start-title">Howard Huang</h1>
+      <div class="start-eyebrow">// Howard Huang - PORTFOLIO</div>
+      <h1 class="start-title">THE BATCAVE</h1>
       <p class="start-sub">Explore the cave to see the work.</p>
       <button class="start-btn" id="startBtn" autofocus>PLAY ▶</button>
       <div class="start-hint">click, press enter, or hit space</div>
@@ -1777,7 +1777,7 @@ const CONTENT = {
   batmobile_zoom: {
     heading: 'Past Work',
     flavor: 'Case files \u2014 Batmobile \u00b7 tap a project for the case study',
-    body: `<div class="entry is-wip"><h3>Props Assist<span class="wip-badge">IN PROGRESS</span></h3><p>Full-stack tool ingesting live NBA odds and player data to surface real-time +EV projections across DraftKings, FanDuel and Caesars.</p><div class="taglist"><span>Python</span><span>JavaScript</span><span>HTML/CSS</span><span>SportsGamesOdds API</span></div><div class="preview"><img src="assets/work/props-assist-1.jpg" alt="" loading="lazy"><img src="assets/work/props-assist-2.jpg" alt="" loading="lazy"></div><span class="wip-note">Case study coming soon!</span></div><div class="entry is-wip"><h3>Spotify Userflow Redesign<span class="wip-badge">IN PROGRESS</span></h3><p></p>Rebuilding the signup flow - where a new listener goes from landing on the app to a first play worth staying for.<div class="taglist"><span>Figma</span><span>Userflow</span><span>Photoshop CS6</span><span>Wireframing</span></div><div class="preview"><img src="assets/work/spotify1.jpg" alt="" loading="lazy"><img src="assets/work/spotify2.jpg" alt="" loading="lazy"></div><span class="wip-note">Case study coming soon!</span></div><div class="entry is-case" data-case="npo-connect" tabindex="0" role="button"><h3>NPO Connect Interface</h3><p>Interface design for a nonprofit collaboration platform, from user research through wireframes to a high-fidelity prototype.</p><div class="taglist"><span>Figma</span><span>Adobe Photoshop CS6</span></div><div class="preview"><img src="assets/work/npo-connect-1.jpg" alt="" loading="lazy"><img src="assets/work/npo-connect-2.jpg" alt="" loading="lazy"></div><span class="cta">VIEW CASE STUDY \u2192</span></div>`
+    body: `<div class="entry is-wip"><h3>Props Assist<span class="wip-badge">IN PROGRESS</span></h3><p>Full-stack tool ingesting live NBA odds and player data to surface real-time +EV projections across DraftKings, FanDuel and Caesars.</p><div class="taglist"><span>Python</span><span>JavaScript</span><span>HTML/CSS</span><span>SportsGamesOdds API</span></div><div class="preview"><img src="assets/work/props-assist-1.jpg" alt="" loading="lazy"><img src="assets/work/props-assist-2.jpg" alt="" loading="lazy"></div><span class="wip-note">Case study coming soon!</span></div><div class="entry is-wip"><h3>Spotify Userflow Redesign<span class="wip-badge">IN PROGRESS</span></h3><p>Rebuilding the signup flow - where a new listener goes from landing on the app to a first play worth staying for.</p><div class="taglist"><span>Figma</span><span>Userflow</span><span>Photoshop CS6</span><span>Wireframing</span></div><div class="preview"><video src="assets/work/spotify-flow.mp4" poster="assets/work/spotify-flow.jpg" autoplay muted loop playsinline preload="metadata"></video><img src="assets/work/spotify-cover.jpg" alt="" loading="lazy"></div><span class="wip-note">Case study coming soon!</span></div><div class="entry is-case" data-case="npo-connect" tabindex="0" role="button"><h3>NPO Connect Interface</h3><p>Interface design for a nonprofit collaboration platform, from user research through wireframes to a high-fidelity prototype.</p><div class="taglist"><span>Figma</span><span>Adobe Photoshop CS6</span></div><div class="preview"><img src="assets/work/npo-connect-cover.jpg" alt="" loading="lazy"><video src="assets/work/npo-connect-flow.mp4" poster="assets/work/npo-connect-flow.jpg" autoplay muted loop playsinline preload="metadata"></video></div><span class="cta">VIEW CASE STUDY \u2192</span></div>`
   },
 
   armory_zoom: {
@@ -1855,7 +1855,7 @@ const CASE_STUDIES = {
       ['Responsibilities','Team lead of five \u00b7 architecture'],
       ['Tools','Figma \u00b7 Figjam \u00b7 Photoshop CS6'],
     ],
-    shots: ['assets/work/spotify1.jpg','assets/work/spotify2.jpg'],
+    shots: ['assets/work/spotify-flow.jpg','assets/work/spotify-cover.jpg','assets/work/spotify1.jpg','assets/work/spotify2.jpg'],
     sections: [
       { tag:'Background', title:'A solved game as a testbed', body:[
         '<p>Because Minimax plays perfectly, anything the language model loses is a difference in reasoning rather than noise. That made the comparison worth building.</p>']},
@@ -2754,16 +2754,22 @@ const AUDIO = (function(){
   const click = document.getElementById('sndClick');
   const btn   = document.getElementById('audioBtn');
   if (!cave || !theme || !click || !btn) {
-    return { start(){}, ping(){} };          // no audio present - stay silent, don't throw
+    return { start(){}, ping(){}, tick(){} };  // no audio present - stay silent, don't throw
   }
-  const LVL = { cave: 0.62, theme: 0.13, click: 0.45 };   // ambience leads, theme sits under it
-  let on = true, started = false;
+  const LVL = { cave: 0.62, theme: 0.13, click: 0.45, type: 0.085 };   // ambience leads, theme sits under it
+  let on = true, started = false, ctx = null, noiseBuf = null, lastTick = 0;
 
   function fade(el, to, ms){
     const from = el.volume, t0 = performance.now();
+    const target = Math.min(1, Math.max(0, to));
+    // a later fade on the same element wins; otherwise two loops fight
+    const token = el.__fade = (el.__fade || 0) + 1;
     (function step(now){
-      const k = Math.min(1, (now-t0)/ms);
-      el.volume = from + (to-from)*k;
+      if (el.__fade !== token) return;
+      // rAF reports the frame's start time, which can predate t0 when fade()
+      // was called mid-frame. Unclamped that makes k - and the volume - negative.
+      const k = Math.min(1, Math.max(0, (now - t0) / ms));
+      el.volume = Math.min(1, Math.max(0, from + (target - from) * k));
       if (k < 1) requestAnimationFrame(step);
     })(performance.now());
   }
@@ -2773,6 +2779,18 @@ const AUDIO = (function(){
     cave.play().catch(()=>{}); theme.play().catch(()=>{});
     fade(cave, LVL.cave, 2500);
     setTimeout(() => fade(theme, LVL.theme, 4000), 900);   // ambience establishes first
+    // an AudioContext has to be created off a user gesture, and PRESS START is one
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) {
+        ctx = new AC();
+        // one reusable noise buffer feeds every keystroke transient
+        const len = Math.floor(ctx.sampleRate * 0.06);
+        noiseBuf = ctx.createBuffer(1, len, ctx.sampleRate);
+        const d = noiseBuf.getChannelData(0);
+        for (let k = 0; k < len; k++) d[k] = Math.random() * 2 - 1;
+      }
+    } catch(e){ ctx = null; noiseBuf = null; }
   }
   function toggle(){
     on = !on;
@@ -2786,8 +2804,58 @@ const AUDIO = (function(){
     s.volume = LVL.click;
     s.play().catch(()=>{});
   }
+  /* One keystroke of the Batcomputer's keyboard. Synthesised rather than
+     sampled: the typewriter fires every 18ms, so cloning an <audio> per
+     character would churn through ~55 elements a second.
+
+     A mechanical key is two sounds stacked, not a tone:
+       1. a broadband transient  - the switch actuating, ~14ms
+       2. a low resonant thock   - the plate under it, ~55ms, pitch dropping
+     Both get randomised per hit so repeats don't sound machine-stamped,
+     and the transient is lowpassed so it reads heavy rather than brittle. */
+  function tick(){
+    if (!on || !started || !ctx || !noiseBuf) return;
+    if (ctx.state === 'suspended') ctx.resume();
+
+    // a real keyboard tops out well under the type rate; hold a floor so
+    // fast passages don't blur into a single rattle
+    const now = performance.now();
+    if (now - lastTick < 52) return;
+    lastTick = now;
+
+    const t = ctx.currentTime;
+    const v = 0.82 + Math.random() * 0.36;   // per-hit velocity
+
+    // 1. switch transient
+    const src = ctx.createBufferSource();
+    src.buffer = noiseBuf;
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = 2300 + Math.random() * 900;
+    bp.Q.value = 0.9;
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 5200;               // shave the brittle top end
+    const g1 = ctx.createGain();
+    g1.gain.setValueAtTime(LVL.type * 0.95 * v, t);
+    g1.gain.exponentialRampToValueAtTime(0.0001, t + 0.014);
+    src.connect(bp); bp.connect(lp); lp.connect(g1); g1.connect(ctx.destination);
+    src.start(t); src.stop(t + 0.06);
+
+    // 2. body thock
+    const osc = ctx.createOscillator();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(185 + Math.random() * 45, t);
+    osc.frequency.exponentialRampToValueAtTime(115, t + 0.05);
+    const g2 = ctx.createGain();
+    g2.gain.setValueAtTime(0.0001, t);
+    g2.gain.linearRampToValueAtTime(LVL.type * 0.6 * v, t + 0.003);
+    g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.055);
+    osc.connect(g2); g2.connect(ctx.destination);
+    osc.start(t); osc.stop(t + 0.07);
+  }
   btn.addEventListener('click', e => { e.stopPropagation(); toggle(); });
-  return { start, ping };
+  return { start, ping, tick };
 })();
 
 /* click sound on every navigation action */
@@ -2820,6 +2888,7 @@ const DLG = (function(){
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   let queue = [], line = '', i = 0, timer = null, dismissed = false;
+  const seen = new Set();   // scenes whose lines have already played this visit
 
   function render(partial, typing){
     textEl.innerHTML = partial + (typing ? '<span class="caret"></span>' : '');
@@ -2832,6 +2901,9 @@ const DLG = (function(){
     timer = setInterval(() => {
       i++;
       render(line.slice(0, i), true);
+      // tick() holds its own rate floor, so just offer it every character
+      const ch = line.charAt(i - 1);
+      if (ch && ch !== ' ') AUDIO.tick();
       if (i >= line.length) { clearInterval(timer); done(); }
     }, 18);
   }
@@ -2845,10 +2917,19 @@ const DLG = (function(){
     if (queue.length) { line = queue.shift(); type(); }
     else hide();
   }
-  function show(scene){
-    if (dismissed) return;
+  function show(scene, force){
+    if (dismissed && !force) return;
     const lines = DIALOGUE[scene];
     if (!lines) { hide(); return; }
+    // already heard this one - don't replay it every time they come back,
+    // just leave the HINTS button sitting there if they want it again
+    if (seen.has(scene) && !force) {
+      box.classList.remove('show');
+      clearInterval(timer);
+      if (!dismissed) reopen.classList.add('show');
+      return;
+    }
+    seen.add(scene);
     queue = lines.slice();
     line = queue.shift();
     box.classList.add('show');
@@ -2865,7 +2946,7 @@ const DLG = (function(){
   closeEl.addEventListener('click', e => {
     e.stopPropagation(); dismissed = true; hide(); reopen.classList.remove('show');
   });
-  reopen.addEventListener('click', () => { dismissed = false; show(currentScene); });
+  reopen.addEventListener('click', () => { dismissed = false; show(currentScene, true); });
   return { show, hide };
 })();
 
