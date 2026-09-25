@@ -2434,7 +2434,7 @@ const SP_SCREENS = [
 ];
 
 const SP_PERSONA = {
-  name:'William Chen', age:24, initials:'WC',
+  name:'William Chalmers', age:24, initials:'WC',
   photo:'assets/work/spotify-persona.png',
   vitals:[
     ['cap',    `Master’s student`],
@@ -2528,8 +2528,8 @@ function renderSpotifyCase(){
         <p class="sp-lede">Spotify asks for six things before it plays a single song. I moved the payoff in front of the ask — a playlist built from your taste first, the account second.</p>
         <div class="sp-meta">
           <div>${k('Role')}<b>Sole designer — audit, flows, UI, prototype</b></div>
-          <div>${k('Timeline')}<b>4 weeks · Aug–Sep 2026</b></div>
-          <div>${k('Type')}<b>Self-directed, unsolicited</b></div>
+          <div>${k('Timeline')}<b>1 week · Sep 2026</b></div>
+          <div>${k('Type')}<b>Self-directed</b></div>
           <div>${k('Tools')}<b>Figma · FigJam</b></div>
         </div>
       </div>
@@ -2708,7 +2708,7 @@ function renderSpotifyCase(){
       <div class="sp-fix-row head"><span>Gap</span><span></span><span>Next</span></div>
       ${fixes.map(f => '<div class="sp-fix-row"><span class="g">' + f[0] + '</span><span class="a">→</span><span class="f">' + f[1] + '</span></div>').join('')}
     </div>
-    <div class="sp-ph-text" style="margin-top:14px"><p><b>What I’d do differently —</b> write one true, specific sentence here.</p></div>`);
+    <div class="sp-ph-text" style="margin-top:14px"><p><b>Thanks for reading!</p></div>`);
 
   return '<div class="sp">' + hero + nav + research + synthesis + ideation + final + reflection + '</div>';
 }
@@ -3731,7 +3731,7 @@ const AUDIO = (function(){
   if (!cave || !theme || !click || !btn) {
     return { start(){}, ping(){}, tick(){} };  // no audio present - stay silent, don't throw
   }
-  const LVL = { cave: 0.62, theme: 0.21, click: 0.26, type: 0.15 };   // ambience leads, theme sits under it
+  const LVL = { cave: 0.10, theme: 0.20, click: 0.20, type: 0.15 };   // ambience leads, theme sits under it
   let on = true, started = false, ctx = null, noiseBuf = null, lastTick = 0;
 
   function fade(el, to, ms){
