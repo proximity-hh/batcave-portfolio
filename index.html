@@ -1631,6 +1631,32 @@
   .sp-next li .sp-closes{ display:inline-block; margin-left:8px; font-family:var(--font-display); font-weight:700; font-size:7.5px; letter-spacing:1.4px; color:var(--warn); }
   .case-inner .sp-end{ margin:30px 0 0; padding-top:16px; border-top:1px solid var(--line); font-size:10.5px; font-style:italic; color:rgba(150,214,209,.55); max-width:none; }
 
+  /* ---------- optional reveals: Spotify's current screens ---------- */
+  .sp-reveal{
+    display:inline-flex; align-items:center; gap:8px; margin:12px 0 0; padding:7px 13px;
+    border:1px solid var(--line); border-radius:999px; background:rgba(3,24,26,.5);
+    font-family:var(--font-display); font-weight:700; font-size:9px; letter-spacing:1.6px; color:var(--cyan);
+    transition:border-color .15s, color .15s;
+  }
+  .sp-reveal:hover{ border-color:rgba(125,236,255,.42); color:var(--hi); }
+  .sp-reveal .car{ display:inline-block; transition:transform .2s ease; }
+  .sp-reveal[aria-expanded="true"] .car{ transform:rotate(90deg); }
+  .sp-reveal-body{ display:none; margin-top:12px; }
+  .sp-reveal-body.open{ display:block; animation:spReveal .25s ease; }
+  @keyframes spReveal{ from{ opacity:0; transform:translateY(-4px); } }
+  .sp-orig .sp-shot, .sp-compare .sp-shot{ cursor:zoom-in; }
+  .sp-compare{
+    display:grid; grid-template-columns:minmax(0,1fr) 26px 92px; gap:12px; align-items:end;
+    padding:14px; border:1px solid var(--line); border-radius:4px; background:rgba(3,24,26,.5);
+  }
+  .sp-compare .before{ display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:5px; }
+  .sp-compare .after .sp-k{ color:var(--sp); white-space:nowrap; letter-spacing:1.4px; }
+  .sp-compare .arrow{ align-self:center; text-align:center; font-family:var(--font-display); font-weight:700; font-size:18px; color:var(--sp); }
+  .sp-compare .sp-ph{ padding:4px; }
+  .sp-compare .sp-ph b{ font-size:7px; letter-spacing:.2px; }
+  .sp-compare .sp-ph code, .sp-compare .sp-ph .sp-ph-k{ display:none; }
+  .sp-compare .sp-shot-phone, .sp-compare .sp-ph-phone{ border-radius:9px; }
+
   /* ---------- gap -> fix list ---------- */
   .sp-fix{ display:grid; gap:6px; }
   .sp-fix-row{
@@ -1650,6 +1676,11 @@
     .sp-hero{ grid-template-columns:1fr; gap:16px; }
     .sp-hero-media{ padding-top:0; }
     .sp-fix-row{ grid-template-columns:1fr; gap:4px; }
+    .sp-compare{ grid-template-columns:1fr; justify-items:center; }
+    .sp-compare > div{ width:100%; }
+    .sp-compare .before{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .sp-compare .arrow{ transform:rotate(90deg); }
+    .sp-compare .after{ width:110px; }
     .sp-fix-row.head, .sp-fix-row .a{ display:none; }
     .sp-fix-row .f::before{ content:"\2192  "; color:var(--sp); }
     .sp-stats, .sp-g3, .sp-g2, .sp-drivers, .sp-prin, .sp-vs{ grid-template-columns:1fr; }
@@ -2403,7 +2434,7 @@ const SP_SCREENS = [
 ];
 
 const SP_PERSONA = {
-  name:'William Chalmers', age:24, initials:'WC',
+  name:'William Chen', age:24, initials:'WC',
   photo:'assets/work/spotify-persona.png',
   vitals:[
     ['cap',    `Master’s student`],
@@ -2425,6 +2456,16 @@ const SP_PERSONA = {
   /* illustrative, 0–100 — adjust to your own read of him */
   mood:[['Satisfaction', 28], ['Trust', 36], ['Engagement', 74]],
   moodNote:`He wants this to work. The gap between engagement and satisfaction is the opportunity.`,
+};
+
+/* Spotify's current signup, for the before/after. Save screenshots as
+   assets/work/spotify-orig-1.png … -6.png and they replace the placeholders.
+   Both views are collapsed by default; switch either off here. */
+const SP_ORIGINALS = {
+  showStrip:   true,   // expandable strip under the current-flow diagram (Research)
+  showCompare: true,   // six-screens-into-one comparison on the Sign up step (Final Designs)
+  source:      'Spotify iOS, via Mobbin',   // credit for the screenshots; add a date if you have one
+  screens: ['Sign-up method','Email','Password','Date of birth','Name & terms','Notifications'],
 };
 
 const SP_STUDY = {
@@ -2468,6 +2509,12 @@ function renderSpotifyCase(){
     '<section class="sp-ch" id="sp-' + id + '"><div class="sp-ch-head"><span class="sp-ch-num">' + num +
     '</span><div>' + k(label) + '<h3>' + title + '</h3></div></div>' + body + '</section>';
   const count = (n, label, cls) => '<span class="sp-count ' + cls + '"><b>' + n + '</b>' + label + '</span>';
+  const O = SP_ORIGINALS;
+  const origShot = (i, label) => img('assets/work/spotify-orig-' + (i + 1) + '.png', label, 'phone');
+  const reveal = (show, hide, body) =>
+    '<button type="button" class="sp-reveal" aria-expanded="false" data-show="' + show + '" data-hide="' + hide +
+    '"><span class="car">\u25b8</span><span class="lbl">' + show + '</span></button><div class="sp-reveal-body">' + body + '</div>';
+  const captured = O.source ? 'Screens: ' + O.source + '.' : '';
   const flow = (src, title, alt) =>
     '<div class="sp-flow-box"><div class="sp-flow" data-zoom="' + src + '" data-title="' + title + '"><img src="' + src +
     '" alt="' + alt + '"></div><span class="sp-zoom-hint">\u2922 ENLARGE</span></div>';
@@ -2481,13 +2528,14 @@ function renderSpotifyCase(){
         <p class="sp-lede">Spotify asks for six things before it plays a single song. I moved the payoff in front of the ask — a playlist built from your taste first, the account second.</p>
         <div class="sp-meta">
           <div>${k('Role')}<b>Sole designer — audit, flows, UI, prototype</b></div>
-          <div>${k('Timeline')}<b>1 week · Sep 2026</b></div>
-          <div>${k('Type')}<b>Self-directed</b></div>
+          <div>${k('Timeline')}<b>4 weeks · Aug–Sep 2026</b></div>
+          <div>${k('Type')}<b>Self-directed, unsolicited</b></div>
           <div>${k('Tools')}<b>Figma · FigJam</b></div>
         </div>
       </div>
       <div class="sp-hero-media">
         <video src="assets/work/spotify-flow.mp4" poster="assets/work/spotify-flow.jpg" autoplay muted loop playsinline preload="metadata"></video>
+        <span class="sp-cap">Prototype — genre, artists, playlist, then sign up.</span>
       </div>
     </header>
     <div class="sp-stats">
@@ -2519,6 +2567,10 @@ function renderSpotifyCase(){
         <div class="sp-counts">${count(6,' asks before value','bad')}${count(3,' error loops','bad')}</div></div>
       ${flow('assets/work/spotify-flow-current.png','Current Spotify signup flow','Current Spotify signup flow: six asks, then artist selection after the account exists.')}
       <span class="sp-figcap">Every ask comes first. Taste is asked for once — after the account already exists.</span>
+      ${O.showStrip ? reveal('SHOW SPOTIFY’S CURRENT SIGNUP · 6 SCREENS', 'HIDE SPOTIFY’S CURRENT SIGNUP',
+        '<div class="sp-strip sp-orig">' + O.screens.map((l, i) =>
+          '<figure>' + origShot(i, l) + '<figcaption><b>ASK ' + (i + 1) + '</b>' + l + '</figcaption></figure>').join('') +
+        '</div><span class="sp-figcap">Six screens, in order, before any music. ' + captured + '</span>') : ''}
     </div>
     <div class="sp-scope">${k('Constraint')}<p>Date of birth is legally required, so it stays. Separating constraints from choices was the most useful hour of the project.</p></div>
 
@@ -2623,6 +2675,11 @@ function renderSpotifyCase(){
           <h4>${s.title}</h4>
           ${s.ui ? '<div class="sp-ui"><b>' + s.ui[0] + '</b><span>' + s.ui[1] + '</span></div>' : ''}
           <div>${s.decs.map(d => '<div class="sp-dec"><b>' + d[0] + '</b>' + tag(d[2]) + '<p>' + d[1] + '</p></div>').join('')}</div>
+          ${s.ask && O.showCompare ? reveal('COMPARE WITH SPOTIFY TODAY', 'HIDE COMPARISON',
+            '<div class="sp-compare"><div>' + k('Spotify today · 6 screens') +
+            '<div class="before">' + O.screens.map((l, i) => origShot(i, l)).join('') + '</div></div>' +
+            '<span class="arrow">\u2192</span><div class="after">' + k('Redesign · 1') + img(s.img, s.title, 'phone') + '</div></div>' +
+            '<span class="sp-figcap">Email, password, name and terms — three of Spotify’s screens — become one form, and the notification prompt leaves onboarding entirely. Sign-up method and date of birth are open gaps; see Reflection. ' + captured + '</span>') : ''}
         </div>
       </div>`).join('')}`);
 
@@ -2712,7 +2769,15 @@ function wireSpotifyCase(inner){
       if (e.key === 'Escape' && zoom.classList.contains('open')) { e.stopPropagation(); e.preventDefault(); shut(); }
     }, true);
   }
-  inner.querySelectorAll('.sp-sc-media .sp-shot').forEach(im => im.addEventListener('click', () => {
+  inner.querySelectorAll('.sp-reveal').forEach(btn => btn.addEventListener('click', () => {
+    const body = btn.nextElementSibling, open = !body.classList.contains('open');
+    body.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    btn.querySelector('.lbl').textContent = open ? btn.dataset.hide : btn.dataset.show;
+    AUDIO.ping();
+    if (inner.onscroll) inner.onscroll();          // chapter offsets moved
+  }));
+  inner.querySelectorAll('.sp-sc-media .sp-shot, .sp-orig .sp-shot, .sp-compare .sp-shot').forEach(im => im.addEventListener('click', () => {
     AUDIO.ping();
     zoom.classList.add('tall');                       // phone screens fit to height rather than pan
     zoom.querySelector('img').src = im.getAttribute('src');
@@ -3666,7 +3731,7 @@ const AUDIO = (function(){
   if (!cave || !theme || !click || !btn) {
     return { start(){}, ping(){}, tick(){} };  // no audio present - stay silent, don't throw
   }
-  const LVL = { cave: 0.20, theme: 0.15, click: 0.20, type: 0.10 };   // ambience leads, theme sits under it
+  const LVL = { cave: 0.62, theme: 0.21, click: 0.26, type: 0.15 };   // ambience leads, theme sits under it
   let on = true, started = false, ctx = null, noiseBuf = null, lastTick = 0;
 
   function fade(el, to, ms){
@@ -3980,7 +4045,7 @@ document.addEventListener('DOMContentLoaded', function(){
   const bc = document.getElementById('batCursor');
   const frame = document.querySelector('.crt-frame');
   if (!bc || !frame || !window.matchMedia('(hover: hover)').matches) return;
-  const HOT = '.zone, .popup-close, .back-btn, .start-btn, .screen-inner a, .entry.is-case, .case-close, .mobile-nav button, [role="button"], .sp-nav button, .sp-process .ph';
+  const HOT = '.zone, .popup-close, .back-btn, .start-btn, .screen-inner a, .entry.is-case, .case-close, .mobile-nav button, [role="button"], .sp-nav button, .sp-process .ph, .sp-reveal';
   let tx=0, ty=0, cx=0, cy=0, raf=null;
   function loop(){
     cx += (tx-cx)*0.35; cy += (ty-cy)*0.35;      // slight easing so it feels weighted
