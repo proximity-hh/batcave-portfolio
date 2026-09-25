@@ -1083,6 +1083,8 @@
   }
   .start-btn:hover, .start-btn:focus-visible{ animation:none; background:#ffd23f; box-shadow:0 0 40px rgba(242,183,5,.6); outline:none; }
   .start-hint{ font-family:var(--font-body); font-size:11px; color:var(--text-dim); }
+  .start-dest{ margin:-8px 0 0; font-family:var(--font-display); font-weight:700; font-size:10px; letter-spacing:2px; color:var(--cyan); text-transform:uppercase; }
+  .start-dest b{ color:var(--marker); font-weight:700; }
   @keyframes blinkStart{ 50%{ opacity:.55; } }
 
   /* ================= AMBIENT FX LAYER ================= */
@@ -1259,6 +1261,426 @@
   @media (max-width:640px){
     .term-btn{min-width:110px; padding:10px;}
     .panel{width:88%;}
+  }
+
+  /* =========================================================
+     CASE STUDY — rich layout (Spotify onboarding)
+     Everything is namespaced .sp-* so the NPO case study keeps
+     its own simpler styling untouched.
+     ========================================================= */
+  .sp{
+    --sp:#1ed760; --sp-dim:rgba(30,215,96,.12);
+    --line:rgba(125,236,255,.14); --card:rgba(5,38,40,.55);
+    --dim:rgba(150,214,209,.74); --hi:#eafcff; --warn:#ff8fa3;
+  }
+  .sp-k{
+    display:block; font-family:var(--font-display); font-weight:600;
+    font-size:8.5px; letter-spacing:2.2px; text-transform:uppercase;
+    color:rgba(140,205,200,.62); margin-bottom:6px;
+  }
+  .case-inner .sp h4{
+    font-family:var(--font-display); font-weight:600; font-size:13.5px; letter-spacing:.3px;
+    color:var(--hi); margin:30px 0 8px;
+  }
+  .case-inner .sp .sp-card h4, .case-inner .sp .sp-pr h4,
+  .case-inner .sp .sp-driver h4{ margin:0 0 6px; font-size:12.5px; }
+  .sp-grid{ display:grid; gap:10px; }
+  .sp-g2{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .sp-g3{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .sp-card{ padding:14px 16px; border:1px solid var(--line); border-radius:3px; background:var(--card); }
+  .case-inner .sp-card p{ margin:0; font-size:11.5px; line-height:1.65; max-width:none; }
+  .sp-todo{
+    display:inline-block; padding:1px 8px; border:1px dashed rgba(255,194,51,.55); border-radius:3px;
+    color:var(--marker); font-style:normal; font-size:10.5px;
+  }
+
+  /* ---------- hero ---------- */
+  .sp-hero{ display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr); gap:26px; align-items:center; margin:0 0 20px; }
+  .case-inner .sp-lede{ font-size:13.5px; line-height:1.7; color:#dff5f0; margin:0; }
+  .sp-meta{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 18px; margin:18px 0 0; }
+  .sp-meta b{ display:block; font-family:var(--font-body); font-weight:400; font-size:11.5px; line-height:1.55; color:#cfe9e3; }
+  .sp-hero-media{ padding-top:26px; }
+  .sp-hero-media video{
+    display:block; width:100%; aspect-ratio:16/10; object-fit:cover;
+    border:1px solid var(--line); border-radius:3px; background:#04201f;
+  }
+  .sp-cap{ display:block; margin-top:7px; font-family:var(--font-body); font-size:10px; letter-spacing:.3px; color:var(--dim); }
+
+  /* ---------- headline numbers ---------- */
+  .sp-stats{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+  .sp-stat{ padding:14px 16px 13px; border:1px solid var(--line); border-radius:3px; background:var(--card); }
+  .sp-stat .n{ display:flex; align-items:baseline; gap:9px; font-family:var(--font-display); font-weight:700; line-height:1; }
+  .sp-stat .was{ font-size:19px; color:rgba(150,214,209,.42); }
+  .sp-stat .arr{ font-size:12px; color:rgba(150,214,209,.42); }
+  .sp-stat .now{ font-size:30px; color:var(--sp); text-shadow:0 0 18px rgba(30,215,96,.35); }
+  .sp-stat .l{ display:block; margin-top:8px; font-family:var(--font-body); font-size:10.5px; line-height:1.5; color:var(--dim); }
+  .sp-foot{ display:block; margin:8px 0 0; font-family:var(--font-body); font-size:10px; color:rgba(150,214,209,.5); }
+
+  /* ---------- sticky chapter nav ---------- */
+  .sp-nav{
+    position:sticky; top:-22px; z-index:5;   /* = .case-inner padding-top, so nothing shows above it */
+    margin:22px -26px 0; padding:10px 0 10px 26px;
+    background:linear-gradient(180deg, rgba(3,27,29,.98), rgba(3,27,29,.93));
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  }
+  .sp-nav-track{
+    display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; padding-right:110px;
+    /* chips fade out before the BACK button's corner rather than sliding under it */
+    -webkit-mask-image:linear-gradient(90deg, #000 calc(100% - 118px), transparent calc(100% - 86px));
+            mask-image:linear-gradient(90deg, #000 calc(100% - 118px), transparent calc(100% - 86px));
+  }
+  .sp-nav-track::-webkit-scrollbar{ display:none; }
+  .sp-nav button{
+    flex:none; display:flex; align-items:center; gap:6px; padding:6px 11px;
+    border:1px solid var(--line); border-radius:999px; background:none;
+    font-family:var(--font-display); font-weight:700; font-size:9px; letter-spacing:1.6px;
+    color:var(--dim); transition:color .15s, border-color .15s, background .15s;
+  }
+  .sp-nav button b{ color:var(--marker); }
+  .sp-nav button:hover{ color:var(--hi); border-color:rgba(125,236,255,.38); }
+  .sp-nav button.on{ color:var(--hi); border-color:var(--sp); background:var(--sp-dim); }
+
+  /* ---------- chapters ---------- */
+  .sp-ch{ margin-top:38px; scroll-margin-top:58px; }
+  .sp-ch-head{ display:flex; align-items:flex-end; gap:14px; padding-bottom:12px; margin-bottom:18px; border-bottom:1px solid var(--line); }
+  .sp-ch-num{ font-family:var(--font-display); font-weight:700; font-size:34px; line-height:.9; color:var(--sp); text-shadow:0 0 22px rgba(30,215,96,.3); }
+  .sp-ch-head .sp-k{ margin-bottom:4px; }
+  .case-inner .sp-ch-head h3{ margin:0; font-size:18px; }
+  .sp-lead{ margin-bottom:6px; }
+
+  .sp-callout{ margin:16px 0; padding:14px 18px; border-left:2px solid var(--marker); background:rgba(255,194,51,.06); }
+  .case-inner .sp-callout p{ margin:0; max-width:none; color:#f5ecd2; }
+  .sp-callout.q p{ font-family:var(--font-display); font-weight:600; font-size:15px; line-height:1.45; color:var(--hi); }
+  .sp-scope{ display:flex; gap:14px; align-items:flex-start; margin:14px 0 0; padding:12px 16px; border:1px dashed rgba(125,236,255,.22); border-radius:3px; }
+  .sp-scope .sp-k{ margin:2px 0 0; flex:none; color:var(--marker); }
+  .case-inner .sp-scope p{ margin:0; font-size:11.5px; color:var(--dim); max-width:none; }
+
+  /* ---------- placeholders and shots ---------- */
+  .sp-ph{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+    padding:10px; text-align:center; width:100%;
+    border:1.5px dashed rgba(125,236,255,.3); border-radius:4px;
+    background:repeating-linear-gradient(135deg, rgba(125,236,255,.045) 0 8px, transparent 8px 16px), rgba(3,24,26,.6);
+  }
+  .sp-ph .sp-ph-k{ font-family:var(--font-display); font-weight:700; font-size:7.5px; letter-spacing:2px; color:var(--marker); }
+  .sp-ph b{ font-family:var(--font-display); font-weight:600; font-size:10px; letter-spacing:.6px; color:#dff5f0; }
+  .sp-ph code{ font-family:var(--font-body); font-size:8.5px; color:rgba(150,214,209,.55); word-break:break-all; }
+  .sp-shot{ display:block; width:100%; object-fit:cover; border:1px solid var(--line); background:#04201f; }
+  .sp-ph-phone, .sp-shot-phone{ aspect-ratio:9/19.5; border-radius:16px; }
+  .sp-ph-wide, .sp-shot-wide{ aspect-ratio:16/7; border-radius:3px; }
+  .sp-strip{ display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:8px; margin-top:10px; }
+  .sp-strip figure{ margin:0; }
+  .sp-strip .sp-ph-phone b{ font-size:8.5px; }
+  .sp-strip .sp-ph code{ display:none; }
+  .sp-strip figcaption{ margin-top:6px; text-align:center; font-family:var(--font-body); font-size:9.5px; color:var(--dim); }
+  .sp-strip figcaption b{ display:block; font-family:var(--font-display); font-size:7.5px; letter-spacing:1.6px; color:var(--warn); margin-bottom:2px; }
+  .sp-figcap{ display:block; margin-top:8px; font-family:var(--font-body); font-size:10.5px; color:var(--dim); }
+
+  /* ---------- flow diagrams ---------- */
+  .sp-flow-wrap{ margin:14px 0 4px; }
+  .sp-flow-head{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 12px; margin-bottom:8px; }
+  .sp-flow-head strong{ font-family:var(--font-display); font-weight:700; font-size:10px; letter-spacing:2px; color:var(--hi); }
+  .sp-flow-head strong em{ font-style:normal; margin-right:8px; color:var(--marker); }
+  .sp-flow-head.after strong em{ color:var(--sp); }
+  .sp-counts{ display:flex; flex-wrap:wrap; gap:6px; }
+  .sp-count{ font-family:var(--font-body); font-size:10px; padding:3px 9px; border-radius:999px; border:1px solid var(--line); color:var(--dim); }
+  .sp-count b{ font-weight:500; margin-right:3px; }
+  .sp-count.bad b{ color:var(--warn); } .sp-count.good b{ color:var(--sp); }
+  .sp-flow{ border:1px solid var(--line); border-radius:3px; background:#f5f5f3; overflow-x:auto; }
+  .sp-flow img{ display:block; width:100%; min-width:760px; height:auto; }
+  .sp-flow-box{ position:relative; }
+  .sp-flow-box .sp-flow{ cursor:zoom-in; }
+  .sp-zoom-hint{
+    position:absolute; right:8px; bottom:8px; pointer-events:none;
+    padding:4px 9px; border-radius:3px; background:rgba(4,14,18,.88); border:1px solid rgba(125,236,255,.3);
+    font-family:var(--font-display); font-weight:700; font-size:8px; letter-spacing:1.6px; color:var(--cyan);
+  }
+  .sp-zoom{
+    position:absolute; inset:0; z-index:6; display:flex; flex-direction:column;
+    background:#02090b; opacity:0; pointer-events:none; transition:opacity .2s ease;
+  }
+  .sp-zoom.open{ opacity:1; pointer-events:auto; }
+  .sp-zoom-bar{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:12px 18px; border-bottom:1px solid rgba(125,236,255,.14);
+    font-family:var(--font-display); font-weight:700; font-size:9px; letter-spacing:2px; color:var(--cyan);
+  }
+  .sp-zoom-bar .h{ margin-left:auto; margin-right:18px; color:rgba(150,214,209,.55); font-weight:600; }
+  .sp-zoom-bar button{ background:none; border:none; padding:6px; margin:-6px; font-family:var(--font-display); font-weight:700; font-size:11px; letter-spacing:2px; color:var(--marker); }
+  .sp-zoom-body{ flex:1; overflow:auto; padding:18px; display:flex; }
+  .sp-zoom-body img{ display:block; width:auto; max-width:none; height:auto; margin:auto; border-radius:3px; background:#f5f5f3; }
+  .sp-zoom.tall .sp-zoom-body img{ max-height:100%; border-radius:22px; background:#141115; box-shadow:0 0 0 1px rgba(125,236,255,.2); }
+  .sp-zoom.tall .sp-zoom-bar .h{ visibility:hidden; }
+  .sp-sc-media .sp-shot{ cursor:zoom-in; transition:box-shadow .15s; }
+  .sp-sc-media .sp-shot:hover{ box-shadow:0 0 0 1px rgba(30,215,96,.6), 0 0 18px rgba(30,215,96,.25); }
+
+  /* ---------- findings ---------- */
+  .sp-find .big{ display:block; font-family:var(--font-display); font-weight:700; font-size:26px; line-height:1; color:var(--warn); margin-bottom:10px; }
+  .sp-find .big small{ font-size:9px; letter-spacing:1.8px; margin-left:6px; color:rgba(255,143,163,.7); }
+
+  /* ---------- drivers + tags ---------- */
+  .sp-drivers{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+  .sp-driver{ padding:12px 14px; border:1px solid var(--line); border-top:2px solid var(--c); border-radius:3px; background:var(--card); }
+  .sp-driver .where{ display:block; margin:6px 0 0; font-family:var(--font-body); font-size:10.5px; line-height:1.5; color:var(--dim); }
+  .sp-driver .resp{ display:block; margin-top:9px; padding-top:9px; border-top:1px dashed var(--line); font-family:var(--font-body); font-size:11px; line-height:1.5; color:#dff5f0; }
+  .sp-driver .resp::before{ content:"\2192  "; color:var(--c); }
+  .sp-tag{
+    display:inline-flex; align-items:center; gap:5px; padding:2px 8px 2px 6px;
+    border-radius:999px; border:1px solid var(--c, rgba(150,214,209,.35));
+    color:var(--c, rgba(150,214,209,.8));
+    font-family:var(--font-display); font-weight:700; font-size:8px; letter-spacing:1.2px;
+    white-space:nowrap; line-height:1.5;
+  }
+  .sp-tag::before{ content:""; width:5px; height:5px; border-radius:50%; background:currentColor; }
+  .sp-crit{ display:flex; flex-wrap:wrap; gap:6px; margin:4px 0 14px; }
+  .sp-crit span{ font-family:var(--font-body); font-size:10.5px; padding:4px 10px; border-radius:3px; background:rgba(125,236,255,.07); border:1px solid var(--line); color:#cfeeea; }
+
+  /* ---------- problem difficulty ---------- */
+  .sp-diff{ display:grid; gap:6px; }
+  .sp-diff-row{
+    display:grid; grid-template-columns:118px minmax(0,1fr) minmax(0,1fr) 64px; gap:14px; align-items:center;
+    padding:10px 14px; border:1px solid var(--line); border-radius:3px; background:var(--card);
+    font-family:var(--font-body); font-size:11px; line-height:1.45; color:var(--dim);
+  }
+  .sp-diff-row.head{ background:none; border:none; padding:0 14px; }
+  .sp-diff-row.head span{ font-family:var(--font-display); font-weight:600; font-size:8px; letter-spacing:1.8px; text-transform:uppercase; color:rgba(140,205,200,.55); }
+  .sp-diff-row.me{ border-color:rgba(30,215,96,.5); background:var(--sp-dim); color:#dff5f0; }
+  .sp-diff-row b{ font-family:var(--font-display); font-weight:600; font-size:11px; letter-spacing:.4px; color:var(--hi); }
+  .sp-pips{ display:flex; gap:4px; justify-content:flex-end; }
+  .sp-pips i{ width:9px; height:9px; border-radius:2px; border:1px solid rgba(125,236,255,.28); }
+  .sp-pips i.on{ background:var(--warn); border-color:var(--warn); }
+
+  /* ---------- tables ---------- */
+  .sp-scroll{ overflow-x:auto; border:1px solid var(--line); border-radius:3px; background:var(--card); }
+  .sp-table{ width:100%; border-collapse:collapse; min-width:540px; }
+  .sp-table th, .sp-table td{ padding:9px 12px; text-align:left; vertical-align:middle; border-bottom:1px solid rgba(125,236,255,.07); }
+  .sp-table th{ font-family:var(--font-display); font-weight:600; font-size:8.5px; letter-spacing:1.6px; text-transform:uppercase; color:rgba(140,205,200,.7); background:rgba(3,24,26,.6); }
+  .sp-table td{ font-family:var(--font-body); font-size:11px; line-height:1.5; color:#cfe9e3; }
+  .sp-table .c{ text-align:center; }
+  .sp-table .me{ background:var(--sp-dim); }
+  .sp-table th.me{ color:var(--sp); }
+  .sp-table tr:last-child td{ border-bottom:none; }
+  .sp-table tr.key td{ color:var(--hi); font-weight:500; background:rgba(30,215,96,.05); }
+  .sp-table tr.key td.me{ background:rgba(30,215,96,.22); }
+  .sp-m{ display:inline-block; width:10px; height:10px; border-radius:50%; border:1.5px solid rgba(150,214,209,.65); vertical-align:middle; }
+  .sp-m.on{ background:rgba(150,214,209,.9); border-color:rgba(150,214,209,.9); }
+  .sp-m.half{ background:linear-gradient(90deg, rgba(150,214,209,.9) 50%, transparent 50%); }
+  .sp-m.un{ border-style:dashed; border-color:rgba(150,214,209,.32); }
+  .me .sp-m{ border-color:var(--sp); }
+  .me .sp-m.on{ background:var(--sp); }
+  .sp-legend{ display:flex; flex-wrap:wrap; gap:14px; margin:14px 0 8px; font-family:var(--font-body); font-size:10px; color:var(--dim); }
+  .sp-legend span{ display:inline-flex; align-items:center; gap:6px; }
+
+  /* ---------- persona card (light profile panel, dark detail panel) ---------- */
+  .sp-pc{
+    display:grid; grid-template-columns:290px minmax(0,1fr);
+    border:1px solid rgba(125,236,255,.2); border-radius:8px; overflow:hidden; background:#0c1312;
+  }
+  .sp-pc-side{ display:flex; flex-direction:column; background:#dce2e0; color:#141a19; }
+  .sp-pc-photo{ height:186px; display:flex; align-items:center; justify-content:center; background:#fff; }
+  .sp-pc-photo img{ display:block; max-height:150px; max-width:78%; object-fit:contain; }
+  .sp-pc-photo .sp-avatar-ph{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+    font-family:var(--font-display); font-weight:700; font-size:26px; letter-spacing:1px; line-height:1;
+    width:118px; height:118px; margin:0; border-radius:50%;
+    border:1.5px dashed rgba(20,26,25,.3); color:#3a4442;
+    background:repeating-linear-gradient(135deg, rgba(20,26,25,.05) 0 6px, transparent 6px 12px);
+  }
+  .sp-pc-photo .sp-avatar-ph span{ display:block; font-size:7.5px; letter-spacing:1.8px; color:#b8860b; }
+  .sp-pc-info{ padding:20px 22px 24px; }
+  .sp-pc-name{ font-family:var(--font-display); font-weight:600; font-size:20px; letter-spacing:.2px; color:#101514; margin-bottom:14px; }
+  .case-inner .sp-pc-vitals{ list-style:none; margin:0; padding:0; max-width:none; }
+  .case-inner .sp-pc-vitals li{
+    display:flex; align-items:flex-start; gap:10px; margin:0 0 9px;
+    font-family:var(--font-body); font-size:11.5px; line-height:1.45; color:#1b2322;
+  }
+  .sp-pc-vitals svg{ width:15px; height:15px; flex:none; fill:#1b2322; margin-top:1px; }
+  .case-inner .sp-pc-bio{ margin:16px 0 0; font-size:11px; line-height:1.65; color:#2b3432; max-width:none; }
+
+  .sp-pc-main{ padding:22px 26px 22px; display:flex; flex-direction:column; gap:20px; }
+  .case-inner .sp-pc-quote{
+    margin:0; padding-left:12px; border-left:2px solid var(--sp);
+    font-family:var(--font-display); font-weight:500; font-size:14.5px; line-height:1.45; color:var(--hi); max-width:none;
+  }
+  .sp-pc-main h5{ margin:0 0 8px; font-family:var(--font-display); font-weight:600; font-size:15px; letter-spacing:.2px; color:#f2f6f5; }
+  .case-inner .sp-pc-list p{ margin:0 0 7px; font-size:11.5px; line-height:1.6; color:rgba(205,220,217,.72); max-width:none; }
+  .case-inner .sp-pc-list p:last-child{ margin-bottom:0; }
+
+  .sp-mood{ display:grid; grid-template-columns:auto minmax(0,1fr); gap:12px 20px; align-items:center; max-width:470px; }
+  .sp-mood-scale{ grid-column:2; display:flex; justify-content:space-between; margin-bottom:-6px; font-family:var(--font-display); font-weight:700; font-size:15px; line-height:1; }
+  .sp-mood-scale .neg{ color:#e0584f; }
+  .sp-mood-scale .pos{ color:#2ecc40; }
+  .sp-mood b{ font-family:var(--font-display); font-weight:600; font-size:11.5px; color:#e8eeec; white-space:nowrap; }
+  .sp-bar{ height:9px; border-radius:999px; border:1px solid rgba(255,255,255,.35); overflow:hidden; }
+  .sp-bar i{ display:block; height:100%; border-radius:999px; background:#f2f6f5; }
+  .case-inner .sp-mood-note{ margin:12px 0 0; font-size:10.5px; color:var(--dim); max-width:none; }
+
+  /* ---------- clickable process row ---------- */
+  .sp .sp-process{ margin:22px 0 0; }
+  .sp-process .ph{ border-radius:4px; padding:4px 2px 6px; transition:background .15s; }
+  .sp-process .ph:hover{ background:rgba(125,236,255,.06); }
+
+  /* ---------- problem + hypothesis ---------- */
+  .sp-hmw{
+    margin:22px 0; padding:26px 24px; text-align:center; border:1px solid var(--line); border-radius:4px;
+    background:radial-gradient(90% 120% at 50% 0%, rgba(30,215,96,.12), transparent 70%), var(--card);
+  }
+  .sp-hmw .sp-k{ color:var(--sp); }
+  .case-inner .sp-hmw p{ margin:6px auto 0; max-width:36ch; font-family:var(--font-display); font-weight:600; font-size:19px; line-height:1.4; color:var(--hi); }
+  .sp-hyp{ border:1px solid var(--line); border-radius:3px; overflow:hidden; background:var(--card); }
+  .sp-hyp > div{ display:grid; grid-template-columns:104px minmax(0,1fr); border-bottom:1px solid var(--line); }
+  .sp-hyp > div:last-child{ border-bottom:none; }
+  .sp-hyp > div > span{
+    display:flex; align-items:center; padding:12px 14px;
+    font-family:var(--font-display); font-weight:700; font-size:9px; letter-spacing:2px;
+    color:var(--sp); background:rgba(30,215,96,.07); border-right:1px solid var(--line);
+  }
+  .case-inner .sp-hyp p{ margin:0; padding:12px 16px; max-width:none; }
+  .sp-hyp .fail > span{ color:var(--warn); background:rgba(255,143,163,.08); }
+  .sp-obj{ display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); border:1px solid var(--line); border-radius:3px; overflow:hidden; }
+  .sp-obj > div{ padding:16px 18px; }
+  .sp-obj > div:first-child{ background:rgba(255,143,163,.06); border-right:1px solid var(--line); }
+  .sp-obj > div:first-child .sp-k{ color:var(--warn); }
+  .case-inner .sp-obj p{ margin:0 0 8px; max-width:none; font-size:11.5px; }
+  .case-inner .sp-obj p:last-child{ margin-bottom:0; }
+  .sp-obj .said{ font-family:var(--font-display); font-weight:600; font-size:14px; line-height:1.45; color:var(--hi); }
+
+  /* ---------- principles ---------- */
+  .sp-prin{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+  .sp-pr{ display:flex; flex-direction:column; gap:10px; padding:16px; border:1px solid var(--line); border-radius:3px; background:var(--card); }
+  .sp-pr .no{ font-family:var(--font-display); font-weight:700; font-size:10px; letter-spacing:2px; color:var(--sp); }
+  .case-inner .sp-pr p{ margin:0; font-size:11px; line-height:1.65; max-width:none; }
+  .sp-laws{ display:flex; flex-wrap:wrap; gap:5px; }
+  .sp-law{ font-family:var(--font-body); font-size:9.5px; padding:2px 7px; border-radius:3px; background:rgba(125,236,255,.08); color:#bfeff0; }
+  .sp-pr .tags{ display:flex; flex-wrap:wrap; gap:5px; margin-top:auto; padding-top:4px; }
+  .sp-trade{ padding:9px 11px; border-radius:3px; background:rgba(255,194,51,.07); border:1px solid rgba(255,194,51,.22); font-family:var(--font-body); font-size:10.5px; line-height:1.55; color:#f3e6c4; }
+  .sp-trade b{ display:block; margin-bottom:3px; font-family:var(--font-display); font-size:7.5px; letter-spacing:1.8px; color:var(--marker); }
+
+  /* ---------- visual system ---------- */
+  .sp-vs{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-bottom:6px; }
+  .sp-demo{
+    display:flex; align-items:center; justify-content:center; gap:6px; height:66px; margin-bottom:12px;
+    border-radius:3px; background:#101312; border:1px solid rgba(255,255,255,.06);
+  }
+  .sp-demo .sw{ width:26px; height:40px; border-radius:3px; }
+  .sp-demo .btn{ padding:6px 12px; border-radius:999px; font-family:var(--font-display); font-weight:700; font-size:8.5px; letter-spacing:1px; }
+  .sp-demo .btn.off{ background:#2b2e2c; color:#6c716e; }
+  .sp-demo .btn.on{ background:var(--sp); color:#06120a; }
+  .sp-demo .chip{ padding:5px 11px; border-radius:999px; font-family:var(--font-body); font-size:9px; background:#232624; color:#c9cfcc; }
+  .sp-demo .chip.sel{ background:var(--sp); color:#06120a; }
+  .sp-demo .mini{ width:34px; height:54px; border-radius:6px; border:1px solid #2e3230; padding:4px; display:flex; flex-direction:column; gap:3px; }
+  .sp-demo .mini i{ display:block; height:3px; border-radius:2px; background:#3a3e3c; }
+  .sp-demo .mini i.p{ background:var(--sp); width:60%; }
+  .sp-demo .mini i.g{ height:14px; background:#262928; }
+  .sp-demo .mini i.b{ margin-top:auto; height:6px; background:var(--sp); }
+  .sp-demo .st{ width:13px; height:22px; border-radius:3px; border:1.5px solid; background:#1a1d1c; }
+
+  /* ---------- screen by screen ---------- */
+  .sp-screen{ display:grid; grid-template-columns:116px minmax(0,1fr); gap:22px; padding:18px 0; border-top:1px solid var(--line); }
+  .sp-screen:first-of-type{ border-top:none; padding-top:8px; }
+  .sp-sc-media{ align-self:start; position:sticky; top:64px; }
+  .sp-steps{ display:flex; gap:3px; margin:0 0 12px; }
+  .sp-steps i{ position:relative; flex:1; height:4px; border-radius:2px; background:rgba(125,236,255,.14); }
+  .sp-steps i.done{ background:rgba(30,215,96,.4); }
+  .sp-steps i.cur{ background:var(--sp); box-shadow:0 0 8px rgba(30,215,96,.6); }
+  .sp-steps i.ask{ background:rgba(255,194,51,.35); }
+  .sp-steps i.ask.cur{ background:var(--marker); box-shadow:0 0 8px rgba(255,194,51,.6); }
+  .sp-sc-top{ display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; }
+  .sp-sc-top .sp-k{ margin:0; }
+  .sp-badge{ padding:2px 8px; border-radius:999px; border:1px solid rgba(255,194,51,.5); font-family:var(--font-display); font-weight:700; font-size:7.5px; letter-spacing:1.6px; color:var(--marker); }
+  .case-inner .sp-screen h4{ margin:6px 0 10px; font-size:15px; }
+  .sp-ui{ margin:0 0 12px; padding:10px 14px; border-left:2px solid var(--sp); background:rgba(30,215,96,.05); }
+  .sp-ui b{ display:block; font-family:var(--font-display); font-weight:600; font-size:13px; color:var(--hi); }
+  .sp-ui span{ font-family:var(--font-body); font-size:10.5px; color:var(--dim); }
+  .case-inner .sp-sc-note{ margin:0 0 10px; font-size:11.5px; color:#dff5f0; max-width:none; }
+  .sp-dec{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:3px 16px; padding:10px 0; border-bottom:1px dashed rgba(125,236,255,.1); }
+  .sp-dec:last-child{ border-bottom:none; }
+  .sp-dec b{ font-family:var(--font-display); font-weight:600; font-size:12px; letter-spacing:.2px; color:var(--hi); }
+  .sp-dec .sp-tag{ grid-column:2; grid-row:1 / span 2; align-self:start; margin-top:1px; }
+  .case-inner .sp-dec p{ grid-column:1; margin:0; font-size:11px; line-height:1.6; color:var(--dim); max-width:none; }
+
+  /* ---------- measure ---------- */
+  .sp-primary{
+    display:grid; grid-template-columns:auto minmax(0,1fr); gap:22px; align-items:center;
+    padding:18px 20px; border:1px solid rgba(30,215,96,.42); border-radius:4px;
+    background:linear-gradient(90deg, rgba(30,215,96,.13), rgba(30,215,96,.02));
+  }
+  .sp-funnel{ display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:700; font-size:11px; letter-spacing:1.4px; color:var(--hi); white-space:nowrap; }
+  .sp-funnel i{ display:block; width:54px; height:2px; background:linear-gradient(90deg, var(--sp), rgba(30,215,96,.25)); position:relative; }
+  .sp-funnel i::after{ content:""; position:absolute; right:-1px; top:-3px; border:4px solid transparent; border-left-color:rgba(30,215,96,.6); border-right:none; }
+  .case-inner .sp-primary p{ margin:0; font-size:11.5px; max-width:none; }
+  .sp-guard .sp-card{ border-top:2px solid rgba(255,143,163,.55); }
+  .sp-rule{ display:flex; gap:14px; align-items:flex-start; margin-top:14px; padding:14px 18px; border:1px solid rgba(255,143,163,.4); border-radius:3px; background:rgba(255,143,163,.06); }
+  .sp-rule .sp-k{ flex:none; margin:2px 0 0; color:var(--warn); }
+  .case-inner .sp-rule p{ margin:0; max-width:none; color:#ffe3e9; }
+
+  /* ---------- reflect ---------- */
+  .sp-gap .no{ display:block; font-family:var(--font-display); font-weight:700; font-size:9px; letter-spacing:1.8px; color:var(--warn); margin-bottom:6px; }
+  .sp-ph-text{ padding:16px 18px; border:1.5px dashed rgba(255,194,51,.4); border-radius:3px; background:rgba(255,194,51,.04); }
+  .case-inner .sp-ph-text p{ margin:0; font-size:11.5px; color:#f3e6c4; max-width:none; }
+  .sp-next{ list-style:none; counter-reset:n; margin:0; padding:0; display:grid; gap:8px; }
+  .case-inner .sp-next li{
+    counter-increment:n; position:relative; margin:0; padding:10px 14px 10px 46px;
+    border:1px solid var(--line); border-radius:3px; background:var(--card); font-size:11.5px;
+  }
+  .sp-next li::before{
+    content:counter(n); position:absolute; left:12px; top:9px; width:22px; height:22px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; border:1px solid var(--sp);
+    font-family:var(--font-display); font-weight:700; font-size:9px; color:var(--sp);
+  }
+  .sp-next li .sp-closes{ display:inline-block; margin-left:8px; font-family:var(--font-display); font-weight:700; font-size:7.5px; letter-spacing:1.4px; color:var(--warn); }
+  .case-inner .sp-end{ margin:30px 0 0; padding-top:16px; border-top:1px solid var(--line); font-size:10.5px; font-style:italic; color:rgba(150,214,209,.55); max-width:none; }
+
+  /* ---------- gap -> fix list ---------- */
+  .sp-fix{ display:grid; gap:6px; }
+  .sp-fix-row{
+    display:grid; grid-template-columns:minmax(0,1fr) 22px minmax(0,1fr); align-items:center; gap:10px;
+    padding:10px 14px; border:1px solid var(--line); border-radius:3px; background:var(--card);
+    font-family:var(--font-body); font-size:11px; line-height:1.5;
+  }
+  .sp-fix-row.head{ background:none; border:none; padding:0 14px; }
+  .sp-fix-row.head span{ font-family:var(--font-display); font-weight:600; font-size:8px; letter-spacing:1.8px; text-transform:uppercase; color:rgba(140,205,200,.55); }
+  .sp-fix-row .g{ color:#ffc2cd; }
+  .sp-fix-row .a{ text-align:center; color:rgba(150,214,209,.45); }
+  .sp-fix-row .f{ color:#dff5f0; }
+  .sp-crit span:first-child{ background:none; border-color:transparent; padding-left:0; font-family:var(--font-display); font-weight:600; font-size:8.5px; letter-spacing:1.8px; text-transform:uppercase; color:rgba(140,205,200,.62); align-self:center; }
+  .case-inner .sp-callout.q p em{ font-style:normal; color:var(--sp); }
+
+  @media (max-width:900px){
+    .sp-hero{ grid-template-columns:1fr; gap:16px; }
+    .sp-hero-media{ padding-top:0; }
+    .sp-fix-row{ grid-template-columns:1fr; gap:4px; }
+    .sp-fix-row.head, .sp-fix-row .a{ display:none; }
+    .sp-fix-row .f::before{ content:"\2192  "; color:var(--sp); }
+    .sp-stats, .sp-g3, .sp-g2, .sp-drivers, .sp-prin, .sp-vs{ grid-template-columns:1fr; }
+    .sp-stat .now{ font-size:26px; }
+    .sp-nav{ top:-15px; margin:18px -16px 0; padding:9px 0 9px 16px; }
+    .sp-nav-track{ padding-right:96px; }
+    .sp-strip{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .sp-diff-row{ grid-template-columns:minmax(0,1fr) auto; gap:4px 12px; }
+    .sp-diff-row > span{ grid-column:1 / -1; }
+    .sp-diff-row .sp-pips{ grid-column:2; grid-row:1; }
+    .sp-diff-row.head{ display:none; }
+    .sp-pc{ grid-template-columns:1fr; }
+    .sp-pc-photo{ height:150px; }
+    .sp-pc-main{ padding:18px 18px 20px; }
+    .sp-mood{ gap:10px 12px; }
+    .sp .sp-process{ grid-template-columns:repeat(5,minmax(0,1fr)); gap:4px; }
+    .sp-process .ph i{ display:none; }
+    .sp-process .ph strong{ font-size:8px; letter-spacing:.6px; }
+    .sp-hyp > div{ grid-template-columns:1fr; }
+    .sp-hyp > div > span{ border-right:none; border-bottom:1px solid var(--line); padding:8px 14px; }
+    .sp-obj{ grid-template-columns:1fr; }
+    .sp-obj > div:first-child{ border-right:none; border-bottom:1px solid var(--line); }
+    .sp-screen{ grid-template-columns:1fr; gap:16px; }
+    .sp-sc-media{ position:static; width:116px; margin:0 auto; }
+    .sp-dec{ grid-template-columns:1fr; }
+    .sp-dec .sp-tag{ grid-column:1; grid-row:auto; justify-self:start; margin-top:4px; }
+    .sp-primary{ grid-template-columns:1fr; gap:12px; }
+    .sp-rule, .sp-scope{ flex-direction:column; gap:6px; }
+    .case-inner .sp-ch-head h3{ font-size:15px; }
+    .sp-ch-num{ font-size:28px; }
+    .case-inner .sp-hmw p{ font-size:15px; }
   }
 
   /* =========================================================
@@ -1746,6 +2168,7 @@
       <div class="start-eyebrow">// Howard Huang - PORTFOLIO</div>
       <h1 class="start-title">THE BATCAVE</h1>
       <p class="start-sub">Explore the cave to see the work.</p>
+      <p class="start-dest" id="startDest" hidden></p>
       <button class="start-btn" id="startBtn" autofocus>PLAY ▶</button>
       <div class="start-hint">click, press enter, or hit space</div>
     </div>
@@ -1781,7 +2204,7 @@ const CONTENT = {
   batmobile_zoom: {
     heading: 'Past Work',
     flavor: 'Case files \u2014 Batmobile \u00b7 tap a project for the case study',
-    body: `<div class="entry is-wip"><h3>Props Assist<span class="wip-badge">IN PROGRESS</span></h3><p>Full-stack tool ingesting live NBA odds and player data to surface real-time +EV projections across DraftKings, FanDuel and Caesars.</p><div class="taglist"><span>Python</span><span>JavaScript</span><span>HTML/CSS</span><span>SportsGamesOdds API</span></div><div class="preview"><img src="assets/work/props-assist-1.jpg" alt="" loading="lazy"><img src="assets/work/props-assist-2.jpg" alt="" loading="lazy"></div><span class="wip-note">Case study coming soon!</span></div><div class="entry is-wip"><h3>Spotify Userflow Redesign<span class="wip-badge">IN PROGRESS</span></h3><p>Rebuilding the signup flow - where a new listener goes from landing on the app to a first play worth staying for.</p><div class="taglist"><span>Figma</span><span>Userflow</span><span>Photoshop CS6</span><span>Wireframing</span></div><div class="preview"><video src="assets/work/spotify-flow.mp4" poster="assets/work/spotify-flow.jpg" autoplay muted loop playsinline preload="metadata"></video><img src="assets/work/spotify-cover.jpg" alt="" loading="lazy"></div><span class="wip-note">Case study coming soon!</span></div><div class="entry is-case" data-case="npo-connect" tabindex="0" role="button"><h3>NPO Connect Interface</h3><p>Interface design for a nonprofit collaboration platform, from user research through wireframes to a high-fidelity prototype.</p><div class="taglist"><span>Figma</span><span>Adobe Photoshop CS6</span></div><div class="preview"><img src="assets/work/npo-connect-cover.jpg" alt="" loading="lazy"><video src="assets/work/npo-connect-flow.mp4" poster="assets/work/npo-connect-flow.jpg" autoplay muted loop playsinline preload="metadata"></video></div><span class="cta">VIEW CASE STUDY \u2192</span></div>`
+    body: `<div class="entry is-wip"><h3>Props Assist<span class="wip-badge">IN PROGRESS</span></h3><p>Full-stack tool ingesting live NBA odds and player data to surface real-time +EV projections across DraftKings, FanDuel and Caesars.</p><div class="taglist"><span>Python</span><span>JavaScript</span><span>HTML/CSS</span><span>SportsGamesOdds API</span></div><div class="preview"><img src="assets/work/props-assist-1.jpg" alt="" loading="lazy"><img src="assets/work/props-assist-2.jpg" alt="" loading="lazy"></div><span class="wip-note">Case study coming soon!</span></div><div class="entry is-case" data-case="spotify" tabindex="0" role="button"><h3>Spotify Userflow Redesign</h3><p>Moving the payoff in front of the ask \u2014 a playlist built from your taste first, the account second.</p><div class="taglist"><span>Figma</span><span>FigJam</span><span>Userflow</span><span>Prototyping</span></div><div class="preview"><video src="assets/work/spotify-flow.mp4" poster="assets/work/spotify-flow.jpg" autoplay muted loop playsinline preload="metadata"></video><img src="assets/work/spotify-cover.jpg" alt="" loading="lazy"></div><span class="cta">VIEW CASE STUDY \u2192</span></div><div class="entry is-case" data-case="npo-connect" tabindex="0" role="button"><h3>NPO Connect Interface</h3><p>Interface design for a nonprofit collaboration platform, from user research through wireframes to a high-fidelity prototype.</p><div class="taglist"><span>Figma</span><span>Adobe Photoshop CS6</span></div><div class="preview"><img src="assets/work/npo-connect-cover.jpg" alt="" loading="lazy"><video src="assets/work/npo-connect-flow.mp4" poster="assets/work/npo-connect-flow.jpg" autoplay muted loop playsinline preload="metadata"></video></div><span class="cta">VIEW CASE STUDY \u2192</span></div>`
   },
 
   armory_zoom: {
@@ -1846,35 +2269,6 @@ const CASE_STUDIES = {
     ],
   },
 
-  'Spotify Userflow Redesign': {
-    title: 'Spotify Signup Userflow Redesign',
-    kicker: 'Classical search against a language model',
-    brief: [
-      ['Challenge', 'Build a game that makes the difference between two kinds of AI reasoning measurable rather than anecdotal.'],
-      ['Opportunity', 'Tic-tac-toe is solved \u2014 a perfect player can never lose, so every loss is a real signal.'],
-    ],
-    facts: [
-      ['Timeline','2026'],
-      ['Disciplines','Game development \u00b7 AI integration'],
-      ['Responsibilities','Team lead of five \u00b7 architecture'],
-      ['Tools','Figma \u00b7 Figjam \u00b7 Photoshop CS6'],
-    ],
-    shots: ['assets/work/spotify-flow.jpg','assets/work/spotify-cover.jpg','assets/work/spotify1.jpg','assets/work/spotify2.jpg'],
-    sections: [
-      { tag:'Background', title:'A solved game as a testbed', body:[
-        '<p>Because Minimax plays perfectly, anything the language model loses is a difference in reasoning rather than noise. That made the comparison worth building.</p>']},
-      { tag:'Build', title:'What we made', body:[
-        '<ul>'
-        + '<li><b>Local play</b> for two players, with custom sprite art in Photoshop CS6.</li>'
-        + '<li><b>Minimax with Alpha-Beta pruning</b> as the deterministic opponent.</li>'
-        + '<li><b>A Gemini opponent</b>, plus a spectator mode pitting the two AIs against each other.</li>'
-        + '</ul>']},
-      { tag:'Leading the team', title:'Splitting five people across a small codebase', body:[
-        '<p>Work was divided by seam \u2014 game loop, AI, assets, integration \u2014 with board state as the agreed contract between them, so nobody blocked anybody.</p>']},
-      { tag:'Reflection', title:'What I would change', body:[
-        '<p>Prompting the model with the board as text was the weak link. Encoding it as coordinates instead of a drawn grid produced noticeably fewer illegal moves.</p>']},
-    ],
-  },
 
   'npo-connect': {
     title: 'NPO Connect',
@@ -1956,11 +2350,404 @@ const CASE_STUDIES = {
   },
 };
 
+/* =====================================================================
+   SPOTIFY CASE STUDY — rich layout.
+
+   Images: every spImg() falls back to a labelled placeholder if the file
+   is missing. To fill one in, save the image at the path shown on the
+   placeholder (inside assets/work/) — no code change needed.
+
+   The moderated study section is off until SP_STUDY.run is true. Per the
+   case study's own rule: if the study hasn't been run, don't show it.
+   ===================================================================== */
+const SP_DRIVERS = {
+  friction:    { id:'D1', name:'Uncompensated friction', c:'#ff9a6b', where:`Six asks before any audio`,                    resp:`Move the payoff before the ask` },
+  duration:    { id:'D2', name:'Unknown duration',       c:'#ffd166', where:`No progress indication`,                        resp:`Segmented progress bar from screen one` },
+  recovery:    { id:'D3', name:'Error recovery cost',    c:'#ff7a9a', where:`Three validation loops, all before any value`,  resp:`Keep validation — move it after the user has something to protect` },
+  irrelevance: { id:'D4', name:'Perceived irrelevance',  c:'#6ee7ff', where:`Date of birth arrives unexplained`,             resp:`Explain every ask in its subtitle` },
+  fatigue:     { id:'D5', name:'Decision fatigue',       c:'#b8a1ff', where:`Artist grid, three-pick minimum, no guidance`,  resp:`Fewer options, no minimum, explicit multi-select` },
+  commitment:  { id:'D6', name:'Commitment aversion',    c:'#5ee39a', where:`Account required for an unproven product`,      resp:`Prove the product first` },
+};
+
+const SP_SCREENS = [
+  { title:'Genre selection', img:'assets/work/spotify-screen-genre.png',
+    ui:[`What are your favorite music genres?`, `Select one or multiple`],
+    decs:[
+      [`Ten chips, multi-select said out loud`, `Scannable in one pass. Users assume single choice unless told otherwise.`, 'fatigue'],
+      [`No minimum`, `A minimum turns a preference into a requirement — and creates an error loop.`, 'recovery'],
+      [`Skip visible, not buried`, `A hidden exit turns a soft skip into hard abandonment.`, 'friction'],
+    ]},
+  { title:'Artist selection', img:'assets/work/spotify-screen-artists.png',
+    ui:[`Who are your favorite artists?`, `Select one or multiple`],
+    decs:[
+      [`Faces, with names beneath`, `Recognition is faster than recall; names catch artists known only by name.`, 'fatigue'],
+      [`Back navigation added`, `First point a user might spot an upstream mistake. Without it, the only fix is leaving.`, 'recovery'],
+    ]},
+  { title:'Curating your mix', img:'assets/work/spotify-screen-curating.png',
+    decs:[
+      [`A deliberate, visible wait`, `An instant result reads as pre-baked. This screen is the receipt for the effort just spent.`, 'irrelevance'],
+    ]},
+  { title:'Playlist ready', img:'assets/work/spotify-screen-playlist.png', badge:'THE HINGE',
+    ui:[`Your playlist is ready!`, `24 songs picked for your taste`],
+    decs:[
+      [`A specific count`, `A number reads as computed; a generic confirmation reads as a template.`, 'irrelevance'],
+      [`Placed right before the ask`, `Peak-end rule — the ask lands at the flow’s high point, not its low.`, 'commitment'],
+    ]},
+  { title:'Sign up', img:'assets/work/spotify-screen-signup.png', badge:'THE ONLY ASK', ask:true,
+    ui:[`Let’s get you signed up`, `You’ll use this to log in next time`],
+    decs:[
+      [`Subtitle explains the ask`, `Reframes signup as saving what they just built.`, 'irrelevance'],
+      [`Inline validation, password toggle`, `A mistake costs a correction, not a round trip.`, 'recovery'],
+      [`Consent unchecked by default`, `Deliberate rather than dark-patterned.`, 'Trust'],
+    ]},
+];
+
+const SP_PERSONA = {
+  name:'William Chen', age:24, initials:'WC',
+  photo:'assets/work/spotify-persona.png',
+  vitals:[
+    ['cap',    `Master’s student`],
+    ['phone',  `Android — switched from iPhone three weeks ago`],
+    ['phones', `Five to six hours a day on headphones`],
+  ],
+  bio:`William works with headphones on most of the day — coursework, the lab, his commute. He spent four years quietly training Apple Music into a taste profile he trusted. Now on Android, he’s trying Spotify and starting from zero. He knows what a good recommendation feels like, so a weak first impression lands harder.`,
+  quote:`I gave it three artists and it played me the same stuff it plays everyone.`,
+  needs:[
+    `To hear something that sounds like him on the first play — not what everyone gets.`,
+    `To know why he’s being asked for something before he gives it.`,
+    `To rebuild the taste profile he left behind without it feeling like a form.`,
+  ],
+  pains:[
+    `Date of birth arrives before any music, and feels unrelated to it.`,
+    `A password error four fields in, having received nothing yet.`,
+    `A generic first play, which tells him the setup was decorative.`,
+  ],
+  /* illustrative, 0–100 — adjust to your own read of him */
+  mood:[['Satisfaction', 28], ['Trust', 36], ['Engagement', 74]],
+  moodNote:`He wants this to work. The gap between engagement and satisfaction is the opportunity.`,
+};
+
+const SP_STUDY = {
+  run:false,                 // flip to true once the sessions are done
+  participants:'[N]',
+  rows:[
+    [`Median time to first play`,                          '[X]s', '[X]s'],
+    [`Screens traversed`,                                  '[N]',  '[N]'],
+    [`Named a would-abandon point`,                        '[X of N]', '[X of N]'],
+    [`Median perceived ease (1–7)`,                        '[X]',  '[X]'],
+    [`Attributed the music to their own input`,            '[X of N]', '[X of N]'],
+  ],
+};
+
+window.spPlaceholder = function(img){
+  const kind = img.dataset.kind || 'wide';
+  const d = document.createElement('div');
+  if (kind === 'avatar') {
+    d.className = 'sp-avatar-ph';
+    d.innerHTML = (img.dataset.initials || '') + '<span>PHOTO</span>';
+  } else {
+    d.className = 'sp-ph sp-ph-' + kind;
+    d.innerHTML = '<span class="sp-ph-k">PLACEHOLDER</span><b>' + img.dataset.label +
+                  '</b><code>' + img.getAttribute('src') + '</code>';
+  }
+  img.replaceWith(d);
+};
+
+function renderSpotifyCase(){
+  const k   = s => '<span class="sp-k">' + s + '</span>';
+  const tag = key => {
+    const d = SP_DRIVERS[key];
+    return d
+      ? '<span class="sp-tag" style="--c:' + d.c + '">' + d.id + ' · ' + d.name.toUpperCase() + '</span>'
+      : '<span class="sp-tag">' + key.toUpperCase() + '</span>';
+  };
+  const img = (src, label, kind) =>
+    '<img class="sp-shot sp-shot-' + kind + '" src="' + src + '" alt="" data-kind="' + kind +
+    '" data-label="' + label + '" onerror="spPlaceholder(this)">';
+  const chapter = (id, num, label, title, body) =>
+    '<section class="sp-ch" id="sp-' + id + '"><div class="sp-ch-head"><span class="sp-ch-num">' + num +
+    '</span><div>' + k(label) + '<h3>' + title + '</h3></div></div>' + body + '</section>';
+  const count = (n, label, cls) => '<span class="sp-count ' + cls + '"><b>' + n + '</b>' + label + '</span>';
+  const flow = (src, title, alt) =>
+    '<div class="sp-flow-box"><div class="sp-flow" data-zoom="' + src + '" data-title="' + title + '"><img src="' + src +
+    '" alt="' + alt + '"></div><span class="sp-zoom-hint">\u2922 ENLARGE</span></div>';
+
+  /* ---------- hero ---------- */
+  const hero = `
+    <header class="sp-hero" id="sp-top">
+      <div>
+        ${k('Case study · Spotify onboarding')}
+        <h2>Reducing Signup Drop-Off</h2>
+        <p class="sp-lede">Spotify asks for six things before it plays a single song. I moved the payoff in front of the ask — a playlist built from your taste first, the account second.</p>
+        <div class="sp-meta">
+          <div>${k('Role')}<b>Sole designer — audit, flows, UI, prototype</b></div>
+          <div>${k('Timeline')}<b>4 weeks · Aug–Sep 2026</b></div>
+          <div>${k('Type')}<b>Self-directed, unsolicited</b></div>
+          <div>${k('Tools')}<b>Figma · FigJam</b></div>
+        </div>
+      </div>
+      <div class="sp-hero-media">
+        <video src="assets/work/spotify-flow.mp4" poster="assets/work/spotify-flow.jpg" autoplay muted loop playsinline preload="metadata"></video>
+        <span class="sp-cap">Prototype — genre, artists, playlist, then sign up.</span>
+      </div>
+    </header>
+    <div class="sp-stats">
+      <div class="sp-stat"><div class="n"><span class="was">6</span><span class="arr">→</span><span class="now">0</span></div><span class="l">asks before the user receives anything</span></div>
+      <div class="sp-stat"><div class="n"><span class="was">3</span><span class="arr">→</span><span class="now">0</span></div><span class="l">error loops before any value</span></div>
+      <div class="sp-stat"><div class="n"><span class="was">0</span><span class="arr">→</span><span class="now">2</span></div><span class="l">choices made before the ask</span></div>
+    </div>
+    <span class="sp-foot">Counted from the two flow maps. No access to Spotify’s funnel data — everything here is a reasoned hypothesis, not a result.</span>
+    <div class="case-process sp-process">${[
+      ['research','Research',['Flow audit','Constraints','Competitors']],
+      ['synthesis','Synthesis',['Drop-off drivers','Persona']],
+      ['ideation','Ideation',['Hypothesis','Principles','Userflow']],
+      ['final','Final Designs',['Visual system','Screens']],
+      ['reflection','Reflection',['Metrics','Gaps and fixes']],
+    ].map((p, i) => '<div class="ph" data-go="sp-' + p[0] + '" role="button" tabindex="0"><b>' + (i + 1) + '</b><strong>' + p[1] +
+       '</strong><i>' + p[2].join('<br>') + '</i></div>').join('')}</div>`;
+
+  const chapters = [['top','','Overview'],['research','01','Research'],['synthesis','02','Synthesis'],
+                    ['ideation','03','Ideation'],['final','04','Final Designs'],['reflection','05','Reflection']];
+  const nav = '<nav class="sp-nav" aria-label="Case study sections"><div class="sp-nav-track">' + chapters.map(c =>
+    '<button type="button" data-go="sp-' + c[0] + '">' + (c[1] ? '<b>' + c[1] + '</b>' : '') + c[2].toUpperCase() + '</button>'
+  ).join('') + '</div></nav>';
+
+  /* ---------- 01 diagnose ---------- */
+  const research = chapter('research','01','Where do users leave?','Research', `
+    <div class="sp-callout q"><p>Drop-off isn’t caused by length. It’s caused by <em>uncompensated</em> length — steps that take without giving anything back.</p></div>
+    <div class="sp-flow-wrap">
+      <div class="sp-flow-head"><strong><em>BEFORE</em>SPOTIFY TODAY</strong>
+        <div class="sp-counts">${count(6,' asks before value','bad')}${count(3,' error loops','bad')}</div></div>
+      ${flow('assets/work/spotify-flow-current.png','Current Spotify signup flow','Current Spotify signup flow: six asks, then artist selection after the account exists.')}
+      <span class="sp-figcap">Every ask comes first. Taste is asked for once — after the account already exists.</span>
+    </div>
+    <div class="sp-scope">${k('Constraint')}<p>Date of birth is legally required, so it stays. Separating constraints from choices was the most useful hour of the project.</p></div>
+
+    <h4>Spotify has the hardest version of this problem</h4>
+    <div class="sp-diff">
+      <div class="sp-diff-row head"><span>Service</span><span>Starts with</span><span>Must extract</span><span style="text-align:right">Burden</span></div>
+      ${[['YouTube Music','Google account + history','Nothing — starts warm',0],
+         ['Apple Music','Apple ID, no history','Taste only',1],
+         ['Spotify','Nothing','Identity and taste',2,1],
+         ['Tidal / Deezer','Nothing, plus a paywall','Identity, taste, payment',3]].map(r =>
+        '<div class="sp-diff-row' + (r[4] ? ' me' : '') + '"><b>' + r[0] + '</b><span>' + r[1] + '</span><span>' + r[2] +
+        '</span><div class="sp-pips">' + [0,1,2].map(i => '<i class="' + (i < r[3] ? 'on' : '') + '"></i>').join('') + '</div></div>').join('')}
+    </div>
+    <div class="sp-callout"><p><b>No major music app shows the payoff before the ask.</b> Apple Music has the best picker — three levels per gesture, artists derived from genres — but it’s one-time, with no undo. The closest pattern is Duolingo: a lesson before the account.</p></div>`);
+
+  /* ---------- 02 synthesis ---------- */
+  const P = SP_PERSONA;
+  const ICON = {'cap': '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 1 8.5l11 5.5 9-4.5V17h2V8.5L12 3zM6 12.7v3.6C6 18.3 8.7 20 12 20s6-1.7 6-3.7v-3.6l-6 3-6-3z"/></svg>', 'phone': '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 3v13h10V5H7zm5 14.2a.9.9 0 1 0 0 1.8.9.9 0 0 0 0-1.8z"/></svg>', 'phones': '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0-9 9v6a3 3 0 0 0 3 3h1a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1H5v-1a7 7 0 0 1 14 0v1h-2a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h1a3 3 0 0 0 3-3v-6a9 9 0 0 0-9-9z"/></svg>'};
+  const synthesis = chapter('synthesis','02','Why do they leave, and who feels it most?','Synthesis', `
+    <p class="sp-lead">I separated abandonment into the mechanisms behind it. This is the spine of the redesign — every later decision is tagged with the driver it answers.</p>
+    <div class="sp-drivers">${Object.entries(SP_DRIVERS).map(([key, d]) =>
+      '<div class="sp-driver" style="--c:' + d.c + '">' + tag(key) +
+      '<span class="where">' + d.where + '</span><span class="resp">' + d.resp + '</span></div>').join('')}</div>
+
+    <h4>User persona</h4>
+    <div class="sp-pc">
+      <div class="sp-pc-side">
+        <div class="sp-pc-photo"><img src="${P.photo}" alt="" data-kind="avatar" data-initials="${P.initials}" onerror="spPlaceholder(this)"></div>
+        <div class="sp-pc-info">
+          <div class="sp-pc-name">${P.name}, ${P.age}</div>
+          <ul class="sp-pc-vitals">${P.vitals.map(v => '<li>' + ICON[v[0]] + '<span>' + v[1] + '</span></li>').join('')}</ul>
+          <p class="sp-pc-bio">${P.bio}</p>
+        </div>
+      </div>
+      <div class="sp-pc-main">
+        <p class="sp-pc-quote">${P.quote}</p>
+        <div><h5>Needs</h5><div class="sp-pc-list">${P.needs.map(x => '<p>' + x + '</p>').join('')}</div></div>
+        <div><h5>Pain Points</h5><div class="sp-pc-list">${P.pains.map(x => '<p>' + x + '</p>').join('')}</div></div>
+        <div><h5>Emotional State with Spotify</h5>
+          <div class="sp-mood"><span class="sp-mood-scale"><span class="neg">\u2212</span><span class="pos">+</span></span>
+            ${P.mood.map(m => '<b>' + m[0] + '</b><span class="sp-bar"><i style="width:' + m[1] + '%"></i></span>').join('')}</div>
+          <p class="sp-mood-note">${P.moodNote}</p></div>
+      </div>
+    </div>`);
+
+  /* ---------- 03 ideation ---------- */
+  const principles = [
+    { no:'01', t:'Earn commitment before requesting it', laws:['Commitment & consistency','IKEA effect'], drv:['commitment','friction'],
+      body:`Registration moves to the end. By then, leaving means discarding their own work.`,
+      trade:`Selections must survive account creation. If that hand-off fails, the user loses their work at the worst moment.` },
+    { no:'02', t:'Reduce the cost of each decision', laws:['Hick’s Law','Recognition over recall'], drv:['fatigue'],
+      body:`Ten chips, multi-select, faces not names. No minimum anywhere.` },
+    { no:'03', t:'Show the payoff before the ask', laws:['Endowed progress','Peak-end rule'], drv:['duration','irrelevance'],
+      body:`A segmented bar says it’s short. The reveal lands right before the only screen that asks for anything.` },
+  ];
+  const ideation = chapter('ideation','03','What should change?','Ideation', `
+    <h4 style="margin-top:0">Hypothesis</h4>
+    <div class="sp-hyp">
+      <div><span>IF</span><p>a new user gets a personalized playlist before being asked to register,</p></div>
+      <div><span>THEN</span><p>more users who open the app will reach first play,</p></div>
+      <div><span>BECAUSE</span><p>the account reads as saving something they own, not a gate on something unproven.</p></div>
+      <div class="fail"><span>FAILS IF</span><p>playlist-reveal → account conversion is no better than Spotify’s welcome → account.</p></div>
+    </div>
+    <div class="sp-obj">
+      <div>${k('The obvious objection')}<p class="said">“You added three screens before signup.”</p></div>
+      <div>${k('My answer')}<p>Those screens give back — two take a preference, one hands over a result. So the primary metric is end-to-end completion, not form completion, which would flatter the redesign.</p></div>
+    </div>
+    <h4>Three principles</h4>
+    <div class="sp-prin">${principles.map(p => `
+      <div class="sp-pr"><span class="no">PRINCIPLE ${p.no}</span><h4>${p.t}</h4>
+        <div class="sp-laws">${p.laws.map(l => '<span class="sp-law">' + l + '</span>').join('')}</div>
+        <p>${p.body}</p>
+        ${p.trade ? '<div class="sp-trade"><b>TRADE-OFF ACCEPTED</b>' + p.trade + '</div>' : ''}
+        <div class="tags">${p.drv.map(tag).join('')}</div>
+      </div>`).join('')}</div>
+    <div class="sp-flow-wrap" style="margin-top:22px">
+      <div class="sp-flow-head after"><strong><em>AFTER</em>REDESIGN</strong>
+        <div class="sp-counts">${count('6 → 0',' asks before value','good')}${count('0 → 2',' choices before the ask','good')}</div></div>
+      ${flow('assets/work/spotify-flow-redesign.png','Redesigned flow','Redesigned flow: genre and artist selection, curation, playlist ready, then sign up.')}
+      <span class="sp-figcap">Two expression points first, the single ask second from the end. Skipping both routes to a fallback seed, not an error.</span>
+    </div>`);
+
+  /* ---------- 04 build ---------- */
+  const vs = [
+    ['Accent discipline', `Green only means selected, enabled or done — so Sign Up reads as continuation.`,
+      '<span class="btn off">NEXT</span><span class="btn on">NEXT</span>'],
+    ['Pinned primary action', `Same position on every screen, so the thumb learns it once.`,
+      '<span class="mini"><i class="p"></i><i></i><i class="g"></i><i class="b"></i></span>'],
+    ['Fill, not border', `Selection changes the fill, so the grid never shifts as you tap.`,
+      '<span class="chip">Pop</span><span class="chip sel">Jazz</span>'],
+  ];
+  const n = SP_SCREENS.length;
+  const final = chapter('final','04','What does each screen decide?','Final Designs', `
+    <div class="sp-vs">${vs.map(v => '<div class="sp-card"><div class="sp-demo">' + v[2] + '</div><h4>' + v[0] + '</h4><p>' + v[1] + '</p></div>').join('')}</div>
+    ${SP_SCREENS.map((s, idx) => `
+      <div class="sp-screen">
+        <div class="sp-sc-media">${img(s.img, s.title, 'phone')}</div>
+        <div>
+          <div class="sp-steps">${SP_SCREENS.map((x, j) =>
+            '<i class="' + [j < idx ? 'done' : '', j === idx ? 'cur' : '', x.ask ? 'ask' : ''].join(' ').trim() + '"></i>').join('')}</div>
+          <div class="sp-sc-top">${k('Step ' + (idx + 1) + ' of ' + n)}${s.badge ? '<span class="sp-badge">' + s.badge + '</span>' : ''}</div>
+          <h4>${s.title}</h4>
+          ${s.ui ? '<div class="sp-ui"><b>' + s.ui[0] + '</b><span>' + s.ui[1] + '</span></div>' : ''}
+          <div>${s.decs.map(d => '<div class="sp-dec"><b>' + d[0] + '</b>' + tag(d[2]) + '<p>' + d[1] + '</p></div>').join('')}</div>
+        </div>
+      </div>`).join('')}`);
+
+  /* ---------- 05 validate ---------- */
+  const study = !SP_STUDY.run ? '' : `
+    <h4>Moderated comparison · ${SP_STUDY.participants} participants</h4>
+    <div class="sp-scroll"><table class="sp-table"><thead><tr><th></th><th class="c">Spotify</th><th class="c me">Redesign</th></tr></thead>
+      <tbody>${SP_STUDY.rows.map(r => '<tr><td>' + r[0] + '</td><td class="c">' + r[1] + '</td><td class="c me">' + r[2] + '</td></tr>').join('')}</tbody></table></div>`;
+  const fixes = [
+    [`Artists ignore genre picks`,  `Derive the grid from the genres chosen`],
+    [`No age gate`,                 `Test placement: up front vs. at the end`],
+    [`Skip copy says “picked for your taste”`, `Separate copy for the fallback seed`],
+    [`Selections lost if user leaves at the form`, `Design the abandonment path`],
+    [`No social sign-up`,           `Add OAuth at the conversion screen`],
+  ];
+  const reflection = chapter('reflection','05','How would we know — and what’s missing?','Reflection', `
+    <div class="sp-primary">
+      <div>${k('Primary metric')}<div class="sp-funnel">APP OPEN<i></i>FIRST PLAY</div></div>
+      <p>End-to-end, not form completion — measuring the form alone would exclude everyone who left before reaching it.</p>
+    </div>
+    <div class="sp-crit" style="margin-top:12px"><span>Guardrails:</span><span>Time to first play</span><span>Day-7 retention</span><span>Personalization skip rate</span><span>Lost-setup support contacts</span></div>
+    <div class="sp-rule">${k('Decision rule')}<p>If completion rises but day-7 retention falls, it optimized the wrong thing and shouldn’t ship.</p></div>
+    ${study}
+    <h4>Known gaps, and the fix for each</h4>
+    <div class="sp-fix">
+      <div class="sp-fix-row head"><span>Gap</span><span></span><span>Next</span></div>
+      ${fixes.map(f => '<div class="sp-fix-row"><span class="g">' + f[0] + '</span><span class="a">→</span><span class="f">' + f[1] + '</span></div>').join('')}
+    </div>
+    <div class="sp-ph-text" style="margin-top:14px"><p><b>What I’d do differently —</b> write one true, specific sentence here.</p></div>`);
+
+  return '<div class="sp">' + hero + nav + research + synthesis + ideation + final + reflection + '</div>';
+}
+
+/* chapter nav: jump on click, highlight whichever chapter is on screen */
+function wireSpotifyCase(inner){
+  inner.querySelectorAll('video').forEach(v => { v.muted = true; v.play().catch(()=>{}); });
+  const nav = inner.querySelector('.sp-nav');
+  if (!nav) return;
+  const btns = [...nav.querySelectorAll('button')];
+  const targets = btns.map(b => inner.querySelector('#' + b.dataset.go));
+  btns.forEach((b, i) => b.addEventListener('click', () => {
+    AUDIO.ping();
+    const t = targets[i];
+    if (!t) return;
+    inner.scrollTo({ top: i === 0 ? 0 : t.offsetTop - nav.offsetHeight - 8,
+                     behavior: REDUCE_MOTION ? 'auto' : 'smooth' });
+  }));
+  let lastOn = -1;
+  const sync = () => {
+    const y = inner.scrollTop + nav.offsetHeight + 40;
+    let on = 0;
+    targets.forEach((t, i) => { if (t && t.offsetTop <= y) on = i; });
+    btns.forEach((b, i) => b.classList.toggle('on', i === on));
+    if (on !== lastOn) { lastOn = on; routeWrite(true, CHAPTER_SLUG[btns[on].dataset.go]); }
+    const act = btns[on];
+    const track = nav.firstElementChild;
+    if (act && track) track.scrollLeft = act.offsetLeft - track.offsetLeft - 16;   // keep the active chip in view on phones
+  };
+  inner.querySelectorAll('.sp-process [data-go]').forEach(el => {
+    const go = () => { const b = nav.querySelector('[data-go="' + el.dataset.go + '"]'); if (b) b.click(); };
+    el.addEventListener('click', go);
+    el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  });
+  inner.onscroll = sync;                               // assigned, not added — openCase reuses this element
+  sync();
+
+  /* flow maps render ~6px text at column width, so let them open at natural size */
+  const view = inner.parentElement;
+  let zoom = view.querySelector('.sp-zoom');
+  if (!zoom) {
+    zoom = document.createElement('div');
+    zoom.className = 'sp-zoom';
+    zoom.innerHTML = '<div class="sp-zoom-bar"><span class="t"></span><span class="h">SCROLL TO PAN</span><button type="button" aria-label="Close">CLOSE \u2715</button></div><div class="sp-zoom-body"><img alt=""></div>';
+    view.appendChild(zoom);
+    // flows are wide and short, so a plain vertical wheel should pan sideways
+    const zb = zoom.querySelector('.sp-zoom-body');
+    zb.addEventListener('wheel', e => {
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && zb.scrollWidth > zb.clientWidth) {
+        zb.scrollLeft += e.deltaY; e.preventDefault();
+      }
+    }, { passive:false });
+    const shut = () => zoom.classList.remove('open');
+    zoom.querySelector('button').addEventListener('click', e => { e.stopPropagation(); AUDIO.ping(); shut(); });
+    zoom.addEventListener('click', e => { if (e.target === zoom || e.target.classList.contains('sp-zoom-body')) shut(); });
+    // Esc closes the enlarged map before it can reach the case-close handler
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && zoom.classList.contains('open')) { e.stopPropagation(); e.preventDefault(); shut(); }
+    }, true);
+  }
+  inner.querySelectorAll('.sp-sc-media .sp-shot').forEach(im => im.addEventListener('click', () => {
+    AUDIO.ping();
+    zoom.classList.add('tall');                       // phone screens fit to height rather than pan
+    zoom.querySelector('img').src = im.getAttribute('src');
+    zoom.querySelector('.t').textContent = (im.dataset.label || 'SCREEN').toUpperCase();
+    zoom.querySelector('.sp-zoom-body').scrollTop = 0;
+    zoom.classList.add('open');
+  }));
+  inner.querySelectorAll('[data-zoom]').forEach(f => f.addEventListener('click', () => {
+    AUDIO.ping();
+    zoom.classList.remove('tall');
+    zoom.querySelector('img').src = f.dataset.zoom;
+    zoom.querySelector('.t').textContent = (f.dataset.title || 'FLOW').toUpperCase();
+    zoom.querySelector('.sp-zoom-body').scrollLeft = 0;
+    zoom.classList.add('open');
+  }));
+}
+CASE_STUDIES.spotify = { title:'Spotify Userflow Redesign', render: renderSpotifyCase, after: wireSpotifyCase };
+
 function openCase(id){
   const c = CASE_STUDIES[id];
   const view = document.getElementById('caseView');
   const inner = document.getElementById('caseInner');
   if (!c || !view || !inner) return;
+  view.dataset.caseId = id;
+  if (c.render) {
+    inner.innerHTML = c.render();
+    inner.scrollTop = 0;
+    view.classList.add('open');
+    view.setAttribute('aria-hidden','false');
+    if (c.after) c.after(inner);
+    routeWrite();
+    return;
+  }
+  inner.onscroll = null;
   inner.innerHTML =
     '<h2>' + c.title + '</h2><span class="kicker">' + c.kicker + '</span>' +
     (c.brief ? '<div class="case-brief">' + c.brief.map(b =>
@@ -1978,6 +2765,7 @@ function openCase(id){
   inner.scrollTop = 0;
   view.classList.add('open');
   view.setAttribute('aria-hidden','false');
+  routeWrite();
 }
 function closeCase(){
   const view = document.getElementById('caseView');
@@ -1985,12 +2773,13 @@ function closeCase(){
   if (!view.classList.contains('open')) return false;
   view.classList.remove('open');
   view.setAttribute('aria-hidden','true');
+  const z = view.querySelector('.sp-zoom'); if (z) z.classList.remove('open');
   return true;
 }
 document.addEventListener('click', e => {
   const ent = e.target.closest('.entry.is-case');
   if (ent) { AUDIO.ping(); openCase(ent.dataset.case); return; }
-  if (e.target.closest('.case-close')) { AUDIO.ping(); closeCase(); }
+  if (e.target.closest('.case-close')) { AUDIO.ping(); if (closeCase()) routeWrite(); }
 });
 document.addEventListener('keydown', e => {
   const ent = e.target.closest && e.target.closest('.entry.is-case');
@@ -2690,6 +3479,7 @@ function switchScene(target) {
     panPos = 0.5; panPosY = 0.5; stickX = stickY = 0;
     if (window.__panMeasure) window.__panMeasure();
     currentScene = target;
+    routeWrite();
     if (window.setBackdrop) setBackdrop(target);
     buildMobileNav(target);
     if (window.__navSetOpen) window.__navSetOpen(false);
@@ -2736,10 +3526,123 @@ backBtn.addEventListener('click', () => switchScene(PARENT[currentScene] || 'ove
 /* ---------- content panel ---------- */
 function closePanel(){}
 
+
+/* =====================================================================
+   DEEP LINKS — each section has its own address.
+     #/experience   #/work   #/about
+     #/work/spotify              #/work/npo-connect
+     #/work/spotify/ideation     (any chapter of the Spotify case)
+   Hash-based, so it works on GitHub Pages, locally and in the standalone
+   file with no server rules. Navigating pushes a history entry, so the
+   browser's back button retraces your steps; reading a case study only
+   rewrites the address in place.
+   ===================================================================== */
+const ROUTE_SCENE = { experience:'computer_zoom', work:'batmobile_zoom', about:'armory_zoom' };
+const SCENE_ROUTE = { computer:'experience', computer_zoom:'experience',
+                      batmobile:'work', batmobile_zoom:'work', armory:'about', armory_zoom:'about' };
+const ROUTE_TITLE = { experience:'Experience', work:'Past Work', about:'About Me' };
+const CHAPTER_SLUG = { 'sp-research':'research', 'sp-synthesis':'synthesis', 'sp-ideation':'ideation',
+                       'sp-final':'final-designs', 'sp-reflection':'reflection' };
+const SLUG_CHAPTER = Object.fromEntries(Object.entries(CHAPTER_SLUG).map(([a, b]) => [b, a]));
+// only case studies with a live entry on the site are linkable — a WIP
+// study sitting in CASE_STUDIES should not be reachable by guessing its URL
+const LINKABLE_CASES = [...CONTENT.batmobile_zoom.body.matchAll(/data-case="([^"]+)"/g)].map(m => m[1]);
+let routeSilent = false, pendingRoute = null, siteStarted = false;
+
+/* Some hosts won't let the page change its own address — an iframe loaded
+   via srcdoc (the Claude preview, some embeds) throws a SecurityError on
+   pushState. Links are a nicety; navigation is not. So the address is
+   updated best-effort, and a refusal switches URL syncing off for the
+   session instead of aborting the scene change half-way. */
+let historyOK = location.protocol !== 'about:';
+function setAddress(url, replace){
+  if (!historyOK) return;
+  try { history[replace ? 'replaceState' : 'pushState'](null, '', url); }
+  catch (e) { historyOK = false; }
+}
+const bareURL = () => location.href.split('#')[0];
+
+function openCaseId(){
+  const v = document.getElementById('caseView');
+  return v && v.classList.contains('open') ? (v.dataset.caseId || null) : null;
+}
+function routeHash(chapterSlug){
+  const sec = SCENE_ROUTE[currentScene];
+  if (!sec) return '';
+  const cid = openCaseId();
+  let h = '#/' + sec;
+  if (sec === 'work' && cid) { h += '/' + cid; if (chapterSlug) h += '/' + chapterSlug; }
+  return h;
+}
+function routeTitle(){
+  const cid = openCaseId(), sec = SCENE_ROUTE[currentScene];
+  if (cid && CASE_STUDIES[cid]) return (CASE_STUDIES[cid].title || cid) + ' — Howard Huang';
+  return sec ? ROUTE_TITLE[sec] + ' — Howard Huang' : 'Howard Huang — Portfolio';
+}
+function routeWrite(replace, chapterSlug){
+  if (routeSilent) return;
+  document.title = routeTitle();
+  const h = routeHash(chapterSlug);
+  if ((location.hash || '') === h) return;
+  setAddress(h || bareURL(), replace);
+}
+function parseRoute(hash){
+  const parts = (hash || '').replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent);
+  const sec = ROUTE_SCENE[parts[0]] ? parts[0] : null;
+  const caseId = sec === 'work' && LINKABLE_CASES.includes(parts[1]) ? parts[1] : null;
+  return { sec, scene: sec ? ROUTE_SCENE[sec] : 'overview', caseId,
+           chapter: caseId && SLUG_CHAPTER[parts[2]] ? SLUG_CHAPTER[parts[2]] : null };
+}
+function applyRoute(hash){
+  const r = parseRoute(hash);
+  if (!siteStarted) { pendingRoute = hash; return; }
+  routeSilent = true;
+  const finish = () => {
+    if (r.caseId) {
+      if (openCaseId() !== r.caseId) openCase(r.caseId);
+      const inner = document.getElementById('caseInner');
+      const t = r.chapter && document.getElementById(r.chapter);
+      if (t) {
+        const nav = inner.querySelector('.sp-nav');
+        inner.scrollTop = t.offsetTop - (nav ? nav.offsetHeight + 8 : 0);
+        if (inner.onscroll) inner.onscroll();
+      }
+    }
+    routeSilent = false;
+    // tidy anything unrecognised in the address back to where we actually are
+    setAddress(routeHash(r.chapter ? CHAPTER_SLUG[r.chapter] : null) || bareURL(), true);
+    document.title = routeTitle();
+  };
+  if (!r.caseId && openCaseId()) closeCase();
+  if (currentScene !== r.scene) {
+    switchScene(r.scene);
+    setTimeout(finish, REDUCE_MOTION ? 220 : 780);   // after the fade and the readout opening
+  } else {
+    finish();
+  }
+}
+window.addEventListener('popstate', () => applyRoute(location.hash));
+
+// arriving on a deep link: say where PLAY will take you
+(function(){
+  if (!location.hash || location.hash === '#/' ) return;
+  const r = parseRoute(location.hash);
+  if (!r.sec) { setAddress(bareURL(), true); return; }
+  pendingRoute = location.hash;
+  const el = document.getElementById('startDest');
+  if (!el) return;
+  const where = r.caseId ? (CASE_STUDIES[r.caseId].title || r.caseId) : ROUTE_TITLE[r.sec];
+  el.innerHTML = 'Link opens <b>' + (r.caseId ? ROUTE_TITLE.work + ' \u2192 ' : '') + where + '</b>';
+  el.hidden = false;
+  document.title = where + ' — Howard Huang';
+})();
+
 /* ---------- start screen ---------- */
 function dismissStart() {
-  if (!startScreen.isConnected) return;
+  if (!startScreen.isConnected || siteStarted) return;
+  siteStarted = true;
   AUDIO.start(); AUDIO.ping();
+  if (pendingRoute) { const r = pendingRoute; pendingRoute = null; setTimeout(() => applyRoute(r), 120); }
   setTimeout(() => DLG.show(currentScene), 700);
   startScreen.classList.add('hidden');
   setTimeout(() => startScreen.remove(), REDUCE_MOTION ? 0 : 650);
@@ -2751,7 +3654,7 @@ document.addEventListener('keydown', e => {
     e.preventDefault(); dismissStart(); return;
   }
   if (e.key === 'Escape') {
-    if (closeCase()) { AUDIO.ping(); return; }
+    if (closeCase()) { AUDIO.ping(); routeWrite(); return; }
     if (currentScene !== 'overview') { e.preventDefault(); AUDIO.ping(); switchScene(PARENT[currentScene] || 'overview'); }
   }
 });
@@ -2764,7 +3667,7 @@ const AUDIO = (function(){
   if (!cave || !theme || !click || !btn) {
     return { start(){}, ping(){}, tick(){} };  // no audio present - stay silent, don't throw
   }
-  const LVL = { cave: 0.20, theme: 0.25, click: 0.20, type: 0.3 };   // ambience leads, theme sits under it
+  const LVL = { cave: 0.62, theme: 0.21, click: 0.26, type: 0.15 };   // ambience leads, theme sits under it
   let on = true, started = false, ctx = null, noiseBuf = null, lastTick = 0;
 
   function fade(el, to, ms){
@@ -3078,7 +3981,7 @@ document.addEventListener('DOMContentLoaded', function(){
   const bc = document.getElementById('batCursor');
   const frame = document.querySelector('.crt-frame');
   if (!bc || !frame || !window.matchMedia('(hover: hover)').matches) return;
-  const HOT = '.zone, .popup-close, .back-btn, .start-btn, .screen-inner a, .entry.is-case, .case-close, .mobile-nav button, [role="button"]';
+  const HOT = '.zone, .popup-close, .back-btn, .start-btn, .screen-inner a, .entry.is-case, .case-close, .mobile-nav button, [role="button"], .sp-nav button, .sp-process .ph';
   let tx=0, ty=0, cx=0, cy=0, raf=null;
   function loop(){
     cx += (tx-cx)*0.35; cy += (ty-cy)*0.35;      // slight easing so it feels weighted
